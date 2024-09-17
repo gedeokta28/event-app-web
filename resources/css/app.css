@@ -1,0 +1,9 @@
+.required::after {
+    content: "*";
+    color: #f00;
+    margin-left: 4px;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}

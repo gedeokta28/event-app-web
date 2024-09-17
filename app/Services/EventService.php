@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Event;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class EventService extends BaseService
+{
+    /**
+     * StockService constructor
+     *
+     * @param Event $event
+     */
+    public function __construct(Event $event)
+    {
+        $this->model = $event;
+    }
+
+
+
+    public function create(array $data)
+    {
+
+        $event = Event::create($data);
+
+        if (isset($data['logo_file']) && $data['logo_file'] instanceof UploadedFile) {
+            $this->storeEventImage($event, $data['logo_file']);
+        }
+
+        if (isset($data['intro_file']) && $data['intro_file'] instanceof UploadedFile) {
+            $this->storeEventIntroImage($event, $data['intro_file']);
+        }
+
+
+        return $event;
+    }
+
+    public function update($id, array $data)
+    {
+
+        $event = $this->model->findOrFail($id);
+
+
+        $event->update(array_filter($data));
+        if (isset($data['logo_file']) && $data['logo_file'] instanceof UploadedFile) {
+            $this->storeEventImage($event, $data['logo_file']);
+        }
+        if (isset($data['intro_file']) && $data['intro_file'] instanceof UploadedFile) {
+            $this->storeEventIntroImage($event, $data['intro_file']);
+        }
+        return $event;
+    }
+
+
+
+    protected function storeEventImage(Event $event, UploadedFile $image)
+    {
+        $fileExtension = $image->clientExtension();
+        $filename = sprintf("%s.%s", $event->event_id, $fileExtension);
+
+        $filepath = $image->storeAs('event/images', $filename);
+        $event->update(['logo_file' => $filepath]);
+    }
+
+    protected function storeEventIntroImage(Event $event, UploadedFile $image)
+    {
+        $fileExtension = $image->clientExtension();
+        $filename = sprintf("%s.%s", "intro_$event->event_id", $fileExtension);
+
+        $filepath = $image->storeAs('event/intro', $filename);
+        $event->update(['intro_file' => $filepath]);
+    }
+}
