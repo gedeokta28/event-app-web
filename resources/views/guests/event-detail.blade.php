@@ -2,6 +2,17 @@
 <html lang="en">
 
 <head>
+    <meta property="og:title" content="{{ $event->event_name }}" />
+    <meta property="og:description" content="{{ strip_tags($event->event_description) }}" />
+    <meta property="og:image" content="{{ asset('app/' . $event->logo_file) }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $event->event_name }}" />
+    <meta name="twitter:description" content="{{ strip_tags($event->event_description) }}" />
+    <meta name="twitter:image" content="{{ asset('app/' . $event->logo_file) }}" />
     <style>
         .form-control {
             font-size: 12p;
@@ -46,7 +57,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.78);
             /* Overlay hitam */
             z-index: 0;
             /* Di atas gambar latar belakang tetapi di bawah konten */
@@ -67,11 +78,6 @@
             justify-content: center;
             /* Scroll konten di dalam */
         }
-
-
-
-
-
 
         #buy-ticket-modal input,
         #buy-ticket-modal select {
@@ -175,6 +181,7 @@
             </div>
 
         </div>
+     
 
     </div>
 

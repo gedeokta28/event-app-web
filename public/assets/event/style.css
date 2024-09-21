@@ -14,7 +14,9 @@
   color: #2f3138;
   font-family: "Open Sans", sans-serif;
 } */
-
+.row {
+  margin-bottom: 100px;
+}
 h2 {
   font-family: "Raleway", sans-serif;
   font-size: 36px;
