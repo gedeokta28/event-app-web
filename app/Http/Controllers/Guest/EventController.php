@@ -58,10 +58,11 @@ class EventController extends Controller
         return view('guests.index', compact('eventList', 'event', 'formattedDateRange', 'formattedDayRange', 'eventTime'));
     }
 
-    public function show($id)
+    public function show($slug)
     {
         // Temukan event berdasarkan ID
-        $event = Event::findOrFail($id);
+        // $event = Event::findOrFail($id);
+        $event = Event::where('slug', $slug)->firstOrFail();
 
         // Format tanggal dan waktu
         $initStartDate = \Carbon\Carbon::parse($event->event_start_date);

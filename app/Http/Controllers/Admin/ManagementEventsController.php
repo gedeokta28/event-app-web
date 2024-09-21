@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Services\EventService;
 use Illuminate\Support\Facades\Log;
 use App\DataTables\EventDataTable;
+use Illuminate\Support\Str;
 
 class ManagementEventsController extends Controller
 {
@@ -40,17 +41,14 @@ class ManagementEventsController extends Controller
      */
     public function store(EventStoreRequest $request)
     {
-        // Log::info('Store method is being called');
 
-        // // Log the entire request to see the inputs
-        // Log::info($request->all());
-
-        // $data = $request->validated();
-        // Log::info($data);
 
         $data = $request->validated();
         $data['event_start_date'] = \Carbon\Carbon::parse($data['event_start_date'])->format('Y-m-d');
         $data['event_end_date'] = \Carbon\Carbon::parse($data['event_end_date'])->format('Y-m-d');
+
+        // Generate slug from event_name
+        $data['slug'] = Str::slug($data['event_name']);
 
         // Auto-generate event_code_reg and event_code_trans
         $event_code_reg = '1'; // Example static code or logic to determine the code
@@ -69,8 +67,8 @@ class ManagementEventsController extends Controller
 
         if ($lastEvent) {
             $lastId = $lastEvent->event_id;
-            $lastYear = substr($lastId, 0, 4);
-            $lastMonth = substr($lastId, 4, 2);
+            $lastYear = '20' . substr($lastId, 0, 2);
+            $lastMonth = substr($lastId, 2, 2);
             $lastNumber = intval(substr($lastId, 6));
 
             if ($currentYear == $lastYear && $currentMonth == $lastMonth) {
@@ -87,6 +85,8 @@ class ManagementEventsController extends Controller
 
         return redirect()->route('events.create')->with('success', 'Data berhasil disimpan');
     }
+
+
     public function edit(Event $event)
     {
 

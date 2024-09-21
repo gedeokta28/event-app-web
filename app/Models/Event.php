@@ -42,5 +42,6 @@ class Event extends Model
         'event_code_reg',
         'event_code_trans',
         'event_max_pax',
+        'slug',
     ];
 }

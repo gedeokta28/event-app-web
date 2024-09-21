@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', [\App\Http\Controllers\Guest\EventController::class, 'index'])->name('guests.index');
-Route::get('/events/{id}', [\App\Http\Controllers\Guest\EventController::class, 'show'])->name('guests.event.detail');
+// Route::get('/events/{id}', [\App\Http\Controllers\Guest\EventController::class, 'show'])->name('guests.event.detail');
+Route::get('/events/{slug}', [\App\Http\Controllers\Guest\EventController::class, 'show'])->name('guests.event.detail');
 
 Route::get('/management-panel/login', function () {
     return view('auth.login');
