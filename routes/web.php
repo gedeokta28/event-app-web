@@ -25,6 +25,7 @@ Route::get('/management-panel/login', function () {
 })->name('login-admin');
 
 Route::post('/events/register', [\App\Http\Controllers\Guest\RegistrationEventController::class,  'store'])->name('events.register');
+// Route::get('/eventssss', [\App\Http\Controllers\Guest\RegistrationEventController::class,  'stores'])->name('events.register');
 
 Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::redirect("/", "/management-panel/dashboard");
