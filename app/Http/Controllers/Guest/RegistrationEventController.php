@@ -25,15 +25,26 @@ class RegistrationEventController extends Controller
     public function store(Request $request)
     {
         // Validasi data pendaftaran
+        $paxPurpose = '';
         $validatedData = $request->validate([
             'pax_name' => 'required|string|max:50',
             'pax_phone' => 'required|string|max:50',
             'pax_email' => 'required|email|max:100',
-            'pax_company_name' => 'required|string|max:100',
+            'pax_age' => 'required|string|max:30',
+            'pax_purpose_of_visit' => 'required|string|max:500',
+            // 'pax_company_name' => 'required|string|max:100',
+            'other_purpose' => 'nullable|string|max:1000',
             'event_id' => 'required|integer', // Asumsikan ada event_id dalam form
         ]);
+        if ($validatedData['other_purpose'] == null) {
+            $paxPurpose = $validatedData['pax_purpose_of_visit'];
+        } else {
+            $paxPurpose = $validatedData['other_purpose'];
+        }
+
 
         try {
+
             $eventid = $validatedData['event_id'];
 
             $event = Event::find($eventid);
@@ -68,7 +79,10 @@ class RegistrationEventController extends Controller
                     'pax_name' => $validatedData['pax_name'],
                     'pax_phone' => $validatedData['pax_phone'],
                     'pax_email' => $validatedData['pax_email'],
-                    'pax_company_name' => $validatedData['pax_company_name'],
+                    'pax_age' => $validatedData['pax_age'],
+                    'pax_purpose_of_visit' => $paxPurpose,
+                    // 'pax_company_name' => $validatedData['pax_company_name'],
+
                     'reg_success' => false,
                     'reg_ticket_no' => $reg_ticket_no, // Set nomor tiket
                 ]);
@@ -84,7 +98,9 @@ class RegistrationEventController extends Controller
                         'pax_name' => $validatedData['pax_name'],
                         'pax_phone' => $validatedData['pax_phone'],
                         'pax_email' => $validatedData['pax_email'],
-                        'pax_company_name' => $validatedData['pax_company_name'],
+                        'pax_age' => $validatedData['pax_age'],
+                        'pax_purpose_of_visit' => $paxPurpose,
+                        // 'pax_company_name' => $validatedData['pax_company_name'],
                         'reg_success' => true,
                         'reg_ticket_no' => $reg_ticket_no, // Set nomor tiket
                     ]);
@@ -170,35 +186,17 @@ class RegistrationEventController extends Controller
                     $registration->update(['barcode_file' => $filepath]);
 
 
-                    // $outputPath = 'event_images/event_' . $reg_ticket_no . '.png';
-                    // $savePath = storage_path('app/public/' . $outputPath);
-                    // $img->save($savePath);
-
-                    // $barcodeUrl = Storage::url($outputPath);
-                    // Menghasilkan path penyimpanan file
-                    // $fileName = 'event_' . $reg_ticket_no . '.png';
-                    // $folderPath = 'public/event_images';
-
-                    // // Mengubah gambar ke stream
-                    // $imageStream = $img->stream('png');
-
-                    // // Menyimpan gambar ke storage menggunakan storeAs
-                    // Storage::disk('public')->put($folderPath . '/' . $fileName, $imageStream);
-
-                    // // Mendapatkan URL gambar
-                    // $barcodeUrl = Storage::url($folderPath . '/' . $fileName);
-                    // $registration->update(['barcode_file' => $barcodeUrl]);
 
                     //Whatsapp
-                    $sid    = "ACff0172d7a76da6daafc10412493c7c66"; // Ganti dengan SID Twilio Anda
-                    $token  = "909131c29d1ca3c1f18300e748b2aa3b"; // Ganti dengan AuthToken Twilio Anda
+                    $sid = env('TWILIO_SID');
+                    $token = env('TWILIO_AUTH_TOKEN');
                     $twilio = new \Twilio\Rest\Client($sid, $token);
 
                     // Format pesan yang dikirimkan
                     $messageBody = "🎉 Selamat datang di event kami! 🎉\n\n";
                     $messageBody .= "Kami senang memberitahukan Anda bahwa registrasi Anda berhasil. Berikut adalah detail tiket Anda:\n\n";
                     $messageBody .= "Nama Peserta: " . $validatedData['pax_name'] . "\n";
-                    $messageBody .= "Perusahaan: " . $validatedData['pax_company_name'] . "\n";
+                    // $messageBody .= "Perusahaan: " . $validatedData['pax_company_name'] . "\n";
                     $messageBody .= "Nomor Telepon: " . $validatedData['pax_phone'] . "\n";
                     $messageBody .= "Email: " . $validatedData['pax_email'] . "\n\n";
                     $messageBody .= "Harap simpan tiket ini sebagai bukti registrasi Anda. Terima kasih.";
@@ -213,52 +211,15 @@ class RegistrationEventController extends Controller
                                 "mediaUrl" => ["https://keneas.com/app/$filepath"]
                             ]
                         );
+
                     return redirect()->back()->with('success', 'Registration successful. Your ticket has been sent via WhatsApp.');
                 } catch (\Exception $e) {
                     dd($e);
                     return redirect()->back()->withErrors('Registration successful but failed to send WhatsApp message. Please contact support.');
                 }
-
-
-
-                // // Define the file path for saving the barcode image
-                // $barcodePath = 'public/barcodes/barcode_' . $reg_ticket_no . '.png';
-
-                // // Save the barcode image to storage as a PNG file
-                // Storage::put($barcodePath, base64_decode($barcode));
-
-                // // Get the path of the saved barcode image
-                // $barcodeUrl = Storage::url($barcodePath);
-
-
-
-                // try {
-                //     $sid    = "ACff0172d7a76da6daafc10412493c7c66"; // Ganti dengan SID Twilio Anda
-                //     $token  = "909131c29d1ca3c1f18300e748b2aa3b"; // Ganti dengan AuthToken Twilio Anda
-                //     $twilio = new \Twilio\Rest\Client($sid, $token);
-
-                //     // Format pesan yang dikirimkan
-                //     $messageBody = "Selamat, registrasi berhasil untuk event {$event->name}. Berikut adalah tiket Anda: {$barcodeUrl}.";
-
-                //     // Kirim pesan ke nomor peserta
-                //     $message = $twilio->messages
-                //         ->create(
-                //             "whatsapp:+6287806508302", // Nomor WhatsApp peserta
-                //             [
-                //                 "from" => "whatsapp:+14155238886", // Nomor WhatsApp Twilio
-                //                 "body" => $messageBody,
-                //                 "mediaUrl" => ["https://keneas.com/app/event/images/202409001.png"]
-                //             ]
-                //         );
-
-                //     // Redirect kembali dengan pesan sukses
-                //     return redirect()->back()->with('success', 'Registration successful. Your ticket has been sent via WhatsApp.');
-                // } catch (\Exception $e) {
-                //     dd($e);
-                //     return redirect()->back()->withErrors('Registration successful but failed to send WhatsApp message. Please contact support.');
-                // }
             }
         } catch (\Exception $e) {
+            dd($e);
             // Redirect kembali dengan pesan error
             return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.');
         }
@@ -347,46 +308,6 @@ class RegistrationEventController extends Controller
                 } catch (\Exception $e) {
                     dd($e);
                 }
-
-
-
-                // // Define the file path for saving the barcode image
-                // $barcodePath = 'public/barcodes/barcode_' . $reg_ticket_no . '.png';
-
-                // // Save the barcode image to storage as a PNG file
-                // Storage::put($barcodePath, base64_decode($barcode));
-
-                // // Get the path of the saved barcode image
-                // $barcodeUrl = Storage::url($barcodePath);
-
-                // $registration->update(['barcode_file' => $barcodeUrl]);
-
-
-                // try {
-                //     $sid    = "ACff0172d7a76da6daafc10412493c7c66"; // Ganti dengan SID Twilio Anda
-                //     $token  = "909131c29d1ca3c1f18300e748b2aa3b"; // Ganti dengan AuthToken Twilio Anda
-                //     $twilio = new \Twilio\Rest\Client($sid, $token);
-
-                //     // Format pesan yang dikirimkan
-                //     $messageBody = "Selamat, registrasi berhasil untuk event {$event->name}. Berikut adalah tiket Anda: {$barcodeUrl}.";
-
-                //     // Kirim pesan ke nomor peserta
-                //     $message = $twilio->messages
-                //         ->create(
-                //             "whatsapp:+6287806508302", // Nomor WhatsApp peserta
-                //             [
-                //                 "from" => "whatsapp:+14155238886", // Nomor WhatsApp Twilio
-                //                 "body" => $messageBody,
-                //                 "mediaUrl" => ["https://keneas.com/app/event/images/202409001.png"]
-                //             ]
-                //         );
-
-                //     // Redirect kembali dengan pesan sukses
-                //     return redirect()->back()->with('success', 'Registration successful. Your ticket has been sent via WhatsApp.');
-                // } catch (\Exception $e) {
-                //     dd($e);
-                //     return redirect()->back()->withErrors('Registration successful but failed to send WhatsApp message. Please contact support.');
-                // }
             }
         } catch (\Exception $e) {
             // Redirect kembali dengan pesan error

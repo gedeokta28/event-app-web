@@ -3,53 +3,92 @@
 
 <head>
     <style>
-        #intro {
+        .form-control {
+            font-size: 12p;
+            /* Adjust the size as needed */
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
             width: 100%;
-            height: 100vh;
+            height: 100%;
+        }
+
+        body {
+            font-family: "Open Sans", sans-serif;
+            overflow: hidden;
+            /* Mencegah scroll di body */
+            position: relative;
+            /* Membuat posisi relatif untuk overlay */
+        }
+
+        .background {
+            position: fixed;
+            /* Memastikan latar belakang tetap di tempat */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: url('{{ asset('app/' . $event->intro_file) }}') top center;
             background-size: cover;
-            overflow: hidden;
-            position: relative;
+            background-repeat: no-repeat;
+            z-index: -1;
+            /* Di belakang konten */
         }
 
-        .register-btn {
-            color: #fff;
-            background: #f82249;
-            font-family: "Raleway", sans-serif;
-            font-size: 15px;
-            letter-spacing: 1px;
-            padding: 10px 25px;
+        body::before {
+            content: '';
+            position: fixed;
+            /* Overlay tetap di tempat */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            /* Overlay hitam */
+            z-index: 0;
+            /* Di atas gambar latar belakang tetapi di bawah konten */
+        }
+
+
+        .content {
+            position: relative;
+            z-index: 1;
+            /* Di atas overlay */
+            color: white;
+            /* Warna teks agar terlihat di atas overlay */
+            padding: 30px;
+            /* Sesuaikan padding jika perlu */
+            height: 100vh;
+            /* Mengatur tinggi konten sesuai layar */
+            overflow-y: auto;
+            justify-content: center;
+            /* Scroll konten di dalam */
+        }
+
+
+
+
+
+
+        #buy-ticket-modal input,
+        #buy-ticket-modal select {
+            border-radius: 0;
+        }
+
+        #buy-ticket-modal .btn {
             border-radius: 50px;
-            border: 2px solid #f82249;
-            transition: all ease-in-out 0.3s;
-            font-weight: 600;
-            margin-left: 0px;
-            margin-top: 2px;
-            line-height: 1;
-            text-transform: uppercase;
-        }
-
-        .register-btn:hover {
-            background: transparent;
-            color: #f82249;
-            /* Warna border muncul sebagai warna teks saat hover */
-        }
-
-        #venue .venue-info {
-            background: url('{{ asset('assets/event/img/venue-info-bg.jpg') }}') top center no-repeat;
-            background-size: cover;
-            position: relative;
-            padding-top: 60px;
-            padding-bottom: 60px;
-        }
-
-        #about {
-            background: url('{{ asset('assets/event/img/about-bg.jpg') }}');
-            background-size: cover;
-            overflow: hidden;
-            position: relative;
+            padding: 10px 40px;
+            transition: all 0.2s;
+            background-color: #f82249;
+            border: 0;
             color: #fff;
-            padding: 60px 0 40px 0;
+        }
+
+        #buy-ticket-modal .btn:hover {
+            background-color: #e0072f;
         }
 
         .event-logo {
@@ -61,16 +100,6 @@
         .event-logo-listing {
             width: 35px;
             height: auto;
-        }
-
-
-
-        #subscribe {
-            padding: 60px;
-            background: url(../img/subscribe-bg.jpg) center center no-repeat;
-            background-size: cover;
-            overflow: hidden;
-            position: relative;
         }
     </style>
     <meta charset="utf-8">
@@ -112,34 +141,8 @@
 </head>
 
 <body>
-
-    <!--==========================
-    Header
-  ============================-->
-    <header id="header" class="header-fixed">
-        <div class="container">
-
-            <div id="logo" class="pull-left">
-                <!-- Uncomment below if you prefer to use a text logo -->
-                <!-- <h1><a href="#main">C<span>o</span>nf</a></h1>-->
-                <a href="#intro" class="scrollto"><img src="{{ asset('assets/images/event.png') }}" alt=""
-                        title=""></a>
-            </div>
-
-            <nav id="nav-menu-container">
-                <ul class="nav-menu">
-                    <li class=""><a href="{{ route('guests.index') }}">Home</a>
-                    </li>
-                    <li><a href="{{ route('guests.index') }}#speakers">Event Listings</a></li>
-                </ul>
-            </nav><!-- #nav-menu-container -->
-        </div>
-    </header><!-- #header -->
-
-
-
-    <main id="main" class="main-page">
-
+    <div class="background"></div>
+    <div class="content">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -155,90 +158,143 @@
                 {{ session('success') }}
             </div>
         @endif
-        <!--==========================
-      Speaker Details Section
-    ============================-->
-        <section id="speakers-details" class="wow fadeIn">
-            <div class="container">
-                <div class="section-header">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="{{ asset('app/' . $event->logo_file) }}" alt="Speaker 1" class="img-fluid">
+            </div>
+
+            <div class="col-md-6">
+                <div class="details">
                     <h2>{{ $event->event_name }}</h2>
                     <p> <i class="fa fa-map-marker"></i> {{ $event->event_location ?? 'Event Location' }}</p>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <img src="{{ asset('app/' . $event->intro_file) }}" alt="Speaker 1" class="img-fluid">
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="details">
-                            @if (!empty($event->logo_file))
-                                <img src="{{ asset('app/' . $event->logo_file) }}" alt="Event Logo"
-                                    class="event-logo-listing mb-3">
-                            @else
-                            @endif
-                            <h5>{{ $formattedDateRange ?? '' }} At {{ $eventTime->format('h:i A') ?? '' }}</h5>
-                            {!! $event->event_description ?? 'Event Description' !!}
-                            <button type="button" class="btn" data-toggle="modal"
-                                data-target="#buy-ticket-modal">Register
-                                Now</button>
-
-                        </div>
-                    </div>
+                    {!! $event->event_description ?? 'Event Description' !!}
+                    <button type="button" class="btn" data-toggle="modal" data-target="#buy-ticket-modal">Register
+                        Now</button>
 
                 </div>
             </div>
 
-            <div id="buy-ticket-modal" class="modal fade">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+        </div>
+
+    </div>
+
+    <div id="buy-ticket-modal" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="registration-form" method="POST" action="{{ route('events.register') }}">
+                        @csrf
+                        <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                        <div class="form-group">
+                            <label for="age_group">Name</label>
+                            <input type="text" class="form-control" name="pax_name" placeholder="Your Name" required>
                         </div>
-                        <div class="modal-body">
-                            <form id="registration-form" method="POST" action="{{ route('events.register') }}">
-                                @csrf
-                                <input type="hidden" name="event_id" value="{{ $event->event_id }}">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="pax_name" placeholder="Your Name"
-                                        required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="pax_phone"
-                                        placeholder="Your Phone Number (Ex: 081234567981)" pattern="[0-9]+"
-                                        title="Please enter only numbers" required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="email" class="form-control" name="pax_email" placeholder="Your Email"
-                                        required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="pax_company_name"
-                                        placeholder="Your Company Name" required>
-                                </div>
-                                <div class="form-group">
-                                    <p class="text-muted">Please ensure your phone number is connected to WhatsApp, as
-                                        tickets will be sent via WhatsApp.</p>
-                                </div>
-                                <div class="text-center">
-                                    <button type="submit" class="btn">Register</button>
-                                </div>
-                            </form>
+                        <div class="form-group">
+                            <label for="age_group">Whatsapp Number</label>
+                            <input type="text" class="form-control" name="pax_phone"
+                                placeholder="Your Phone Number (Ex: 081234567981)" pattern="[0-9]+"
+                                title="Please enter only numbers" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="age_group">Email</label>
+                            <input type="email" class="form-control" name="pax_email" placeholder="Your Email"
+                                required>
                         </div>
 
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-            </div>
+                        <div class="form-group">
+                            <label for="age_group">Age</label>
+                            <select class="form-control" name="pax_age" required>
+                                <option value="" selected disabled>Pilih Age</option>
+                                <option value="20-30">20 - 30</option>
+                                <option value="31-40">31 - 40</option>
+                                <option value="41-50">41 - 50</option>
+                                <option value="51-60+">51 - 60+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="purpose_of_visit">Purpose of Visit</label>
+                            <select class="form-control" id="purpose_of_visit" name="pax_purpose_of_visit" required>
+                                <option value="" selected disabled>Pilih Purpose</option>
+                                <option value="Inspiration for Building Design">Inspiration for Building
+                                    Design
+                                </option>
+                                <option value="Exploring Homeownership Options">Exploring Homeownership
+                                    Options
+                                </option>
+                                <option value="For Leisure - R&R (Rest and Relaxation)">
+                                    For Leisure - R&R (Rest and Relaxation)
+                                </option>
+                                <option value="Other" data-require="true">Other</option>
+                            </select>
+                        </div>
 
-        </section>
+                        <div class="form-group" id="other_purpose_group" style="display: none;">
+                            <label for="other_purpose">Please specify</label>
+                            <textarea class="form-control" name="other_purpose" id="other_purpose" placeholder="Specify your purpose"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <p class="text-muted">*Please ensure your phone number is connected to
+                                WhatsApp, as
+                                tickets will be sent via WhatsApp.</p>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn">Register</button>
+                        </div>
+                    </form>
+                </div>
 
-    </main>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <script>
+        // document.getElementById('purpose_of_visit').addEventListener('change', function() {
+        //     var otherPurposeGroup = document.getElementById('other_purpose_group');
+        //     if (this.value === 'Other') {
+        //         otherPurposeGroup.style.display = 'block';
+        //     } else {
+        //         otherPurposeGroup.style.display = 'none';
+        //     }
+        // });
+        document.addEventListener('DOMContentLoaded', function() {
+            const purposeSelect = document.getElementById('purpose_of_visit');
+            const otherPurposeGroup = document.getElementById('other_purpose_group');
+            const otherPurposeInput = document.getElementById('other_purpose');
+            const form = document.querySelector('form'); // Pastikan ini adalah form yang benar
+            const ageSelect = document.getElementById('pax_age');
 
+            // Menampilkan dan mewajibkan field 'other_purpose' jika opsi 'Other' dipilih
+            purposeSelect.addEventListener('change', function() {
+                if (this.value === 'Other') {
+                    otherPurposeGroup.style.display = 'block';
+                    otherPurposeInput.setAttribute('required', 'required');
+                } else {
+                    otherPurposeGroup.style.display = 'none';
+                    otherPurposeInput.removeAttribute('required');
+                    otherPurposeInput.value = ''; // Kosongkan input jika tidak diperlukan
+                }
+            });
 
-    <a href="#" class="back-to-top"><i class="fa fa-angle-up"></i></a>
+            // Validasi untuk opsi "Pilih Age" dan "Pilih Purpose of Visit"
+            form.addEventListener('submit', function(event) {
+                // Cek apakah pengguna sudah memilih Age
+                if (!ageSelect.value) {
+                    alert('Please select your Age.');
+                    event.preventDefault();
+                }
 
+                // Cek apakah pengguna sudah memilih Purpose of Visit
+                if (!purposeSelect.value) {
+                    alert('Please select your Purpose of Visit.');
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
     <script>
         document.getElementById('registration-form').addEventListener('submit', function(event) {
             const phoneInput = document.querySelector('input[name="pax_phone"]');

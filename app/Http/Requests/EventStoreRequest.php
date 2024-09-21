@@ -28,10 +28,10 @@ class EventStoreRequest extends FormRequest
             'event_start_date'   => 'required|date',
             'event_end_date'     => 'required|date',
             'event_location'     => 'required|string|max:150',
-            'event_time'         => 'required|string|max:100',
+            'event_time'         => 'nullable|string|max:100',
             'logo_file'          => 'nullable|image',
             'intro_file'         => 'nullable|image',
-            'event_description'  => 'nullable|string|max:300',
+            'event_description'  => 'nullable|string|max:1000',
             'event_active'       => 'nullable|boolean',
             'event_max_pax'      => 'required|integer',
         ];

@@ -38,6 +38,8 @@ class EventRegistration extends Model
         'pax_company_name',
         'reg_success',
         'reg_ticket_no',
-        'barcode_file'
+        'barcode_file',
+        'pax_age',
+        'pax_purpose_of_visit'
     ];
 }
