@@ -250,7 +250,7 @@
                                 tickets will be sent via WhatsApp.</p>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn">Register</button>
+                            <button type="submit" id="submit-btn" class="btn">Register</button>
                         </div>
                     </form>
                 </div>
@@ -273,7 +273,7 @@
             const otherPurposeInput = document.getElementById('other_purpose');
             const form = document.querySelector('form'); // Pastikan ini adalah form yang benar
             const ageSelect = document.getElementById('pax_age');
-
+            const submitButton = document.getElementById('submit-btn');
             // Menampilkan dan mewajibkan field 'other_purpose' jika opsi 'Other' dipilih
             purposeSelect.addEventListener('change', function() {
                 if (this.value === 'Other') {
@@ -289,16 +289,10 @@
             // Validasi untuk opsi "Pilih Age" dan "Pilih Purpose of Visit"
             form.addEventListener('submit', function(event) {
                 // Cek apakah pengguna sudah memilih Age
-                if (!ageSelect.value) {
-                    alert('Please select your Age.');
-                    event.preventDefault();
-                }
 
-                // Cek apakah pengguna sudah memilih Purpose of Visit
-                if (!purposeSelect.value) {
-                    alert('Please select your Purpose of Visit.');
-                    event.preventDefault();
-                }
+                submitButton.innerText = 'Submitting...';
+                submitButton.disabled = true;
+
             });
         });
     </script>
