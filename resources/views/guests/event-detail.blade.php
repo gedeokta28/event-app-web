@@ -181,7 +181,7 @@
             </div>
 
         </div>
-     
+
 
     </div>
 
@@ -216,7 +216,7 @@
                         <div class="form-group">
                             <label for="age_group">Age</label>
                             <select class="form-control" name="pax_age" required>
-                                <option value="" selected disabled>Pilih Age</option>
+                                <option value="" selected disabled>Age</option>
                                 <option value="20-30">20 - 30</option>
                                 <option value="31-40">31 - 40</option>
                                 <option value="41-50">41 - 50</option>
@@ -226,7 +226,7 @@
                         <div class="form-group">
                             <label for="purpose_of_visit">Purpose of Visit</label>
                             <select class="form-control" id="purpose_of_visit" name="pax_purpose_of_visit" required>
-                                <option value="" selected disabled>Pilih Purpose</option>
+                                <option value="" selected disabled>Purpose of Visit</option>
                                 <option value="Inspiration for Building Design">Inspiration for Building
                                     Design
                                 </option>
