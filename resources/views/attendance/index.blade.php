@@ -93,7 +93,7 @@
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a href="/dashboard" class="">Home</a></li>
                             <li class="breadcrumb-item active">
-                                Attendance</li>
+                                Scan Attendance</li>
                         </ol>
                     </nav>
                 </div>
@@ -108,19 +108,35 @@
             {{ session('success') }}
         </div>
     @endif
-    <div id="toast" class="toast"></div>
-    <div class="container">
-        <h2>Scan Barcode Ticket</h2>
-        <div id="scanner-container" style="position: relative;">
-            <div id="overlay"
+
+    <div class="content p-4 pb-0 d-flex flex-column-fluid position-relative">
+        <div class="container-fluid px-0">
+            <div class="row">
+                <div class="card">
+                    <div class="card-header w-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span>Scan Barcode Ticket</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="toast" class="toast"></div>
+                        <div class="container">
+                            <div id="scanner-container" style="position: relative;">
+                                {{-- <div id="overlay"
                 style="position: absolute; border: 2px dashed red; pointer-events: none; background-color: rgba(255, 0, 0, 0.2);">
-            </div>
-            <div id="loading"
-                style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <p>Loading...</p>
+            </div> --}}
+                                <div id="loading"
+                                    style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                    <p>Loading...</p>
+                                </div>
+                            </div>
+                            <div id="barcode-result"></div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
-        <div id="barcode-result"></div>
     </div>
 @endsection
 
@@ -141,18 +157,18 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             const scannerContainer = document.querySelector('#scanner-container');
-            const overlay = document.querySelector('#overlay');
+            // const overlay = document.querySelector('#overlay');
             const loadingIndicator = document.getElementById('loading');
             // Sesuaikan ukuran overlay saat halaman dimuat
-            function setOverlaySize() {
-                overlay.style.width = `${scannerContainer.clientWidth * 0.8}px`;
-                overlay.style.height = `${scannerContainer.clientHeight * 0.6}px`;
-                overlay.style.top = `${scannerContainer.clientHeight * 0.2}px`;
-                overlay.style.left = `${scannerContainer.clientWidth * 0.1}px`;
-            }
+            // function setOverlaySize() {
+            //     overlay.style.width = `${scannerContainer.clientWidth * 0.8}px`;
+            //     overlay.style.height = `${scannerContainer.clientHeight * 0.6}px`;
+            //     overlay.style.top = `${scannerContainer.clientHeight * 0.2}px`;
+            //     overlay.style.left = `${scannerContainer.clientWidth * 0.1}px`;
+            // }
 
-            setOverlaySize();
-            window.addEventListener('resize', setOverlaySize);
+            // setOverlaySize();
+            // window.addEventListener('resize', setOverlaySize);
 
             Quagga.init({
                 inputStream: {
