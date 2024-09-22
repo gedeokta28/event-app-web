@@ -108,49 +108,147 @@ class RegistrationEventController extends Controller
                     $barcodeGenerator = new DNS1D();
                     $barcode = $barcodeGenerator->getBarcodePNG($reg_ticket_no, 'C128', 3, 50); // scale: 3, height: 50
 
+                    // $canvasWidth = 600;
+                    // $canvasHeight = 800;
+                    // $img = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
+                    // if ($event->logo_file) {
+                    //     $logoPath = public_path('app/' . $event->logo_file);
+                    //     if (file_exists($logoPath)) {
+                    //         // Buat image dari logo
+                    //         $logoImage = Image::make($logoPath);
+                    //         $logoWidth = $logoImage->width();
+                    //         $logoHeight = $logoImage->height();
+
+                    //         // Tentukan batas maksimum ukuran logo
+                    //         $maxLogoWidth = $canvasWidth * 0.8; // 80% dari lebar canvas
+                    //         $maxLogoHeight = $canvasHeight * 0.8; // 80% dari tinggi canvas
+
+                    //         // Sesuaikan ukuran logo agar sesuai dengan batas maksimum
+                    //         $logoImage->resize($maxLogoWidth, $maxLogoHeight, function ($constraint) {
+                    //             $constraint->aspectRatio();
+                    //             $constraint->upsize(); // Mencegah pembesaran gambar lebih besar dari ukuran aslinya
+                    //         });
+
+                    //         // Ambil ukuran baru dari logo
+                    //         $logoWidth = $logoImage->width();
+                    //         $logoHeight = $logoImage->height();
+
+                    //         // Hitung posisi tengah
+                    //         $x = ($canvasWidth - $logoWidth) / 2;
+                    //         $y = ($canvasHeight - $logoHeight) / 2;
+
+                    //         // Sisipkan logo di tengah canvas
+                    //         $img->insert($logoImage, 'top-left', $x, $y);
+                    //     }
+                    // }
+                    // $barcodeImage = Image::make(base64_decode($barcode));
+                    // $barcodeImage->resize(300, null, function ($constraint) {
+                    //     $constraint->aspectRatio();
+                    // });
+                    // $img->insert($barcodeImage, 'bottom', 20, 20); // Barcode at the bottom of the image
+
+
+                    // // Nama dan folder file yang akan disimpan
+                    // $fileName = 'event_' . $reg_ticket_no . '.png';
+                    // $folderPath = storage_path('app/temp_images'); // Simpan sementara di folder 'temp_images'
+
+                    // // Buat folder jika belum ada
+                    // if (!file_exists($folderPath)) {
+                    //     mkdir($folderPath, 0755, true);
+                    // }
+
+                    // $tempFilePath = $folderPath . '/' . $fileName;
+
+                    // $img->save($tempFilePath);
+
                     $canvasWidth = 600;
                     $canvasHeight = 800;
                     $img = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
+
+                    // Menambahkan logo
                     if ($event->logo_file) {
                         $logoPath = public_path('app/' . $event->logo_file);
                         if (file_exists($logoPath)) {
-                            // Buat image dari logo
                             $logoImage = Image::make($logoPath);
                             $logoWidth = $logoImage->width();
                             $logoHeight = $logoImage->height();
 
-                            // Tentukan batas maksimum ukuran logo
-                            $maxLogoWidth = $canvasWidth * 0.8; // 80% dari lebar canvas
-                            $maxLogoHeight = $canvasHeight * 0.8; // 80% dari tinggi canvas
+                            // Mengatur ukuran maksimal logo (60% dari lebar canvas)
+                            $maxLogoWidth = $canvasWidth * 0.6;
+                            $maxLogoHeight = $canvasHeight * 0.5; // Atur agar lebih kecil dari sebelumnya
 
-                            // Sesuaikan ukuran logo agar sesuai dengan batas maksimum
+                            // Resize logo
                             $logoImage->resize($maxLogoWidth, $maxLogoHeight, function ($constraint) {
                                 $constraint->aspectRatio();
-                                $constraint->upsize(); // Mencegah pembesaran gambar lebih besar dari ukuran aslinya
+                                $constraint->upsize();
                             });
 
-                            // Ambil ukuran baru dari logo
+                            // Mengambil ukuran logo baru
                             $logoWidth = $logoImage->width();
                             $logoHeight = $logoImage->height();
 
-                            // Hitung posisi tengah
+                            // Hitung posisi logo agar berada di bagian atas
                             $x = ($canvasWidth - $logoWidth) / 2;
-                            $y = ($canvasHeight - $logoHeight) / 2;
+                            $y = 40; // Naikkan posisi logo agar lebih dekat ke bagian atas
 
-                            // Sisipkan logo di tengah canvas
                             $img->insert($logoImage, 'top-left', $x, $y);
                         }
                     }
+
+                    // Menambahkan barcode
+                    $barcodeGenerator = new DNS1D();
+                    $barcode = $barcodeGenerator->getBarcodePNG($reg_ticket_no, 'C128', 3, 50);
                     $barcodeImage = Image::make(base64_decode($barcode));
-                    $barcodeImage->resize(300, null, function ($constraint) {
+
+                    $maxBarcodeWidth = $canvasWidth * 0.8;
+                    $barcodeImage->resize($maxBarcodeWidth, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
-                    $img->insert($barcodeImage, 'bottom', 20, 20); // Barcode at the bottom of the image
 
+                    $barcodeWidth = $barcodeImage->width();
+                    $barcodeHeight = $barcodeImage->height();
+
+                    // Posisi barcode lebih ke bawah dari teks nama dan tanggal
+                    $xBarcode = ($canvasWidth - $barcodeWidth) / 2;
+                    $yBarcode = $canvasHeight - $barcodeHeight - 150; // Naikkan sedikit untuk memberi ruang bagi teks nama dan tanggal
+
+                    $img->insert($barcodeImage, 'top-left', $xBarcode, $yBarcode);
+
+                    // Menambahkan teks nama dan tanggal registrasi
+
+                    // Menambahkan teks "NAME" dengan bold
+                    $img->text('NAME', $canvasWidth / 2, $yBarcode - 100, function ($font) {
+                        $font->file(public_path('fonts/arial-bold.TTF')); // Menggunakan font bold
+                        $font->size(22); // Ukuran font
+                        $font->color('#000000');
+                        $font->align('center');
+                        $font->valign('top');
+                    });
+
+                    $registrationName = $validatedData['pax_name']; // Contoh nama registrasi
+                    $img->text($registrationName, $canvasWidth / 2, $yBarcode - 70, function ($font) {
+                        $font->file(public_path('fonts/arial.ttf')); // Menggunakan font biasa (non-bold)
+                        $font->size(23); // Ukuran font
+                        $font->color('#000000');
+                        $font->align('center');
+                        $font->valign('top');
+                    });
+
+
+                    // Menambahkan nomor barcode di bawah barcode
+                    $fontSize = 25;
+                    $yText = $yBarcode + $barcodeHeight + 10;
+                    $img->text($reg_ticket_no, $canvasWidth / 2, $yText, function ($font) use ($fontSize) {
+                        $font->file(public_path('fonts/arial.ttf'));
+                        $font->size($fontSize);
+                        $font->color('#000000');
+                        $font->align('center');
+                        $font->valign('top');
+                    });
 
                     // Nama dan folder file yang akan disimpan
                     $fileName = 'event_' . $reg_ticket_no . '.png';
-                    $folderPath = storage_path('app/temp_images'); // Simpan sementara di folder 'temp_images'
+                    $folderPath = storage_path('app/temp_images');
 
                     // Buat folder jika belum ada
                     if (!file_exists($folderPath)) {
@@ -159,6 +257,7 @@ class RegistrationEventController extends Controller
 
                     $tempFilePath = $folderPath . '/' . $fileName;
 
+                    // Simpan gambar
                     $img->save($tempFilePath);
 
                     $uploadedFile = new UploadedFile(
@@ -211,11 +310,10 @@ class RegistrationEventController extends Controller
     public function stores()
     {
 
+
         try {
             $eventid = "2409001";
-
             $event = Event::find($eventid);
-
             if (!$event) {
                 return redirect()->back()->withErrors('Event not found.');
             }
@@ -233,67 +331,244 @@ class RegistrationEventController extends Controller
 
 
             if ($currentRegistrations >= $event->event_max_pax) {
+                $registration = new EventRegistration([
+                    'reg_id' => $reg_id,
+                    'reg_date_time' => now(), // Atur waktu pendaftaran
+                    'event_id' => $eventid, // Ambil event_id dari form
+                    'pax_name' => "Oktaa",
+                    'pax_phone' => "1231231212",
+                    'pax_email' => "gedaeda@asd.co",
+                    'pax_age' => "asdasda",
+                    'pax_purpose_of_visit' => "asdsadasd",
+                    // 'pax_company_name' => $validatedData['pax_company_name'],
+                    'reg_success' => false,
+                    'reg_ticket_no' => $reg_ticket_no, // Set nomor tiket
+                ]);
 
+                $registration->save();
                 return redirect()->back()->withErrors('Registration failed. The maximum number of participants has been reached.');
             } else {
-
                 try {
+                    $registration = new EventRegistration([
+                        'reg_id' => $reg_id,
+                        'reg_date_time' => now(), // Atur waktu pendaftaran
+                        'event_id' => $eventid, // Ambil event_id dari form
+                        'pax_name' => "Oktaa",
+                        'pax_phone' => "1231231212",
+                        'pax_email' => "gedaeda@asd.co",
+                        'pax_age' => "asdasda",
+                        'pax_purpose_of_visit' => "asdsadasd",
+                        // 'pax_company_name' => $validatedData['pax_company_name'],
+                        'reg_success' => false,
+                        'reg_ticket_no' => $reg_ticket_no, // Set nomor tiket
+                    ]);
+
+                    $registration->save();
 
                     $barcodeGenerator = new DNS1D();
                     $barcode = $barcodeGenerator->getBarcodePNG($reg_ticket_no, 'C128', 3, 50); // scale: 3, height: 50
 
+                    // $canvasWidth = 600;
+                    // $canvasHeight = 800;
+                    // $img = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
+                    // if ($event->logo_file) {
+                    //     $logoPath = public_path('app/' . $event->logo_file);
+                    //     if (file_exists($logoPath)) {
+                    //         $logoImage = Image::make($logoPath);
+                    //         $logoWidth = $logoImage->width();
+                    //         $logoHeight = $logoImage->height();
+
+                    //         $maxLogoWidth = $canvasWidth * 0.6; // 80% dari lebar canvas
+                    //         $maxLogoHeight = $canvasHeight * 0.6; // 80% dari tinggi canvas
+
+                    //         $logoImage->resize($maxLogoWidth, $maxLogoHeight, function ($constraint) {
+                    //             $constraint->aspectRatio();
+                    //             $constraint->upsize(); // Mencegah pembesaran gambar lebih besar dari ukuran aslinya
+                    //         });
+
+                    //         $logoWidth = $logoImage->width();
+                    //         $logoHeight = $logoImage->height();
+
+                    //         $x = ($canvasWidth - $logoWidth) / 2;
+                    //         $y = ($canvasHeight - $logoHeight) / 2;
+
+                    //         $img->insert($logoImage, 'top-left', $x, $y);
+                    //     }
+                    // }
+                    // $barcodeImage = Image::make(base64_decode($barcode));
+
+                    // $maxBarcodeWidth = $canvasWidth * 0.8; 
+                    // $barcodeImage->resize($maxBarcodeWidth, null, function ($constraint) {
+                    //     $constraint->aspectRatio();
+                    // });
+
+                    // $barcodeWidth = $barcodeImage->width();
+                    // $barcodeHeight = $barcodeImage->height();
+
+                    // $xBarcode = ($canvasWidth - $barcodeWidth) / 2;
+                    // $yBarcode = $canvasHeight - $barcodeHeight - 100; 
+
+                    // $img->insert($barcodeImage, 'top-left', $xBarcode, $yBarcode);
+
+                    // $fontSize = 30; 
+                    // $yText = $yBarcode + $barcodeHeight + 10; 
+                    // $img->text($reg_ticket_no, $canvasWidth / 2, $yText, function ($font) use ($fontSize) {
+                    //     $font->file(public_path('fonts/Arial.ttf')); 
+                    //     $font->size($fontSize);
+                    //     $font->color('#000000');
+                    //     $font->align('center');
+                    //     $font->valign('top');
+                    // });
+
+                    // $fileName = 'event_' . $reg_ticket_no . '.png';
+                    // $folderPath = storage_path('app/temp_images'); 
+
+                    // if (!file_exists($folderPath)) {
+                    //     mkdir($folderPath, 0755, true);
+                    // }
+
+                    // $tempFilePath = $folderPath . '/' . $fileName;
+
+                    // // Save the image
+                    // $img->save($tempFilePath);
+                    // $uploadedFile = new UploadedFile(
+                    //     $tempFilePath, // path ke file sementara
+                    //     $fileName,     // nama file
+                    //     'image/png',   // mime type
+                    //     null,          // ukuran file (bisa null, Laravel akan menghitung otomatis)
+                    //     true           // indikasi bahwa ini file yang valid
+                    // );
+
+                    // $fileExtension = $uploadedFile->clientExtension();
+                    // $barcodeFileName = sprintf("%s.%s", 'barcode_' . $reg_ticket_no, $fileExtension);
+
+                    // $filepath = $uploadedFile->storeAs('event/barcodes', $barcodeFileName);
+
+                    // $registration->update(['barcode_file' => $filepath]);
+
+
                     $canvasWidth = 600;
                     $canvasHeight = 800;
                     $img = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
-                    // Tambahkan logo jika ada
+
+                    // Menambahkan logo
                     if ($event->logo_file) {
-                        $logoPath = public_path('storage/' . $event->logo_file);
+                        $logoPath = public_path('app/' . $event->logo_file);
                         if (file_exists($logoPath)) {
-                            // Buat image dari logo
                             $logoImage = Image::make($logoPath);
                             $logoWidth = $logoImage->width();
                             $logoHeight = $logoImage->height();
 
-                            // Tentukan batas maksimum ukuran logo
-                            $maxLogoWidth = $canvasWidth * 0.8; // 80% dari lebar canvas
-                            $maxLogoHeight = $canvasHeight * 0.8; // 80% dari tinggi canvas
+                            // Mengatur ukuran maksimal logo (60% dari lebar canvas)
+                            $maxLogoWidth = $canvasWidth * 0.6;
+                            $maxLogoHeight = $canvasHeight * 0.5; // Atur agar lebih kecil dari sebelumnya
 
-                            // Sesuaikan ukuran logo agar sesuai dengan batas maksimum
+                            // Resize logo
                             $logoImage->resize($maxLogoWidth, $maxLogoHeight, function ($constraint) {
                                 $constraint->aspectRatio();
-                                $constraint->upsize(); // Mencegah pembesaran gambar lebih besar dari ukuran aslinya
+                                $constraint->upsize();
                             });
 
-                            // Ambil ukuran baru dari logo
+                            // Mengambil ukuran logo baru
                             $logoWidth = $logoImage->width();
                             $logoHeight = $logoImage->height();
 
-                            // Hitung posisi tengah
+                            // Hitung posisi logo agar berada di bagian atas
                             $x = ($canvasWidth - $logoWidth) / 2;
-                            $y = ($canvasHeight - $logoHeight) / 2;
+                            $y = 40; // Naikkan posisi logo agar lebih dekat ke bagian atas
 
-                            // Sisipkan logo di tengah canvas
                             $img->insert($logoImage, 'top-left', $x, $y);
                         }
                     }
+
+                    // Menambahkan barcode
+                    $barcodeGenerator = new DNS1D();
+                    $barcode = $barcodeGenerator->getBarcodePNG($reg_ticket_no, 'C128', 3, 50);
                     $barcodeImage = Image::make(base64_decode($barcode));
-                    $barcodeImage->resize(300, null, function ($constraint) {
+
+                    $maxBarcodeWidth = $canvasWidth * 0.8;
+                    $barcodeImage->resize($maxBarcodeWidth, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
-                    $img->insert($barcodeImage, 'bottom', 20, 20); // Barcode at the bottom of the image
 
-                    $outputPath = 'public/event_images/event_' . $reg_ticket_no . '.png';
-                    $savePath = storage_path('app/public/event_images/event_2409001.0003.png');
-                    $img->save($savePath);
+                    $barcodeWidth = $barcodeImage->width();
+                    $barcodeHeight = $barcodeImage->height();
 
-                    $barcodeUrl = Storage::url($outputPath);
-                    dd($barcodeUrl);
+                    // Posisi barcode lebih ke bawah dari teks nama dan tanggal
+                    $xBarcode = ($canvasWidth - $barcodeWidth) / 2;
+                    $yBarcode = $canvasHeight - $barcodeHeight - 150; // Naikkan sedikit untuk memberi ruang bagi teks nama dan tanggal
+
+                    $img->insert($barcodeImage, 'top-left', $xBarcode, $yBarcode);
+
+                    // Menambahkan teks nama dan tanggal registrasi
+
+                    // Menambahkan teks "NAME" dengan bold
+                    $img->text('NAME', $canvasWidth / 2, $yBarcode - 100, function ($font) {
+                        $font->file(public_path('fonts/arial-bold.TTF')); // Menggunakan font bold
+                        $font->size(22); // Ukuran font
+                        $font->color('#000000');
+                        $font->align('center');
+                        $font->valign('top');
+                    });
+
+                    $registrationName = "I Gede Okta Budai assadas"; // Contoh nama registrasi
+                    $img->text($registrationName, $canvasWidth / 2, $yBarcode - 70, function ($font) {
+                        $font->file(public_path('fonts/arial.ttf')); // Menggunakan font biasa (non-bold)
+                        $font->size(23); // Ukuran font
+                        $font->color('#000000');
+                        $font->align('center');
+                        $font->valign('top');
+                    });
+
+
+                    // Menambahkan nomor barcode di bawah barcode
+                    $fontSize = 25;
+                    $yText = $yBarcode + $barcodeHeight + 10;
+                    $img->text($reg_ticket_no, $canvasWidth / 2, $yText, function ($font) use ($fontSize) {
+                        $font->file(public_path('fonts/arial.ttf'));
+                        $font->size($fontSize);
+                        $font->color('#000000');
+                        $font->align('center');
+                        $font->valign('top');
+                    });
+
+                    // Nama dan folder file yang akan disimpan
+                    $fileName = 'event_' . $reg_ticket_no . '.png';
+                    $folderPath = storage_path('app/temp_images');
+
+                    // Buat folder jika belum ada
+                    if (!file_exists($folderPath)) {
+                        mkdir($folderPath, 0755, true);
+                    }
+
+                    $tempFilePath = $folderPath . '/' . $fileName;
+
+                    // Simpan gambar
+                    $img->save($tempFilePath);
+
+                    $uploadedFile = new UploadedFile(
+                        $tempFilePath, // Path ke file sementara
+                        $fileName,     // Nama file
+                        'image/png',   // MIME type
+                        null,          // Ukuran file (dihitung otomatis oleh Laravel)
+                        true           // Indikasi bahwa file valid
+                    );
+
+                    $fileExtension = $uploadedFile->clientExtension();
+                    $barcodeFileName = sprintf("%s.%s", 'barcode_' . $reg_ticket_no, $fileExtension);
+
+                    $filepath = $uploadedFile->storeAs('event/barcodes', $barcodeFileName);
+
+                    // Update registrasi dengan path barcode
+                    $registration->update(['barcode_file' => $filepath]);
+
+
+                    return redirect()->back()->with('success', 'Registration successful. Your ticket has been sent via WhatsApp.');
                 } catch (\Exception $e) {
-                    dd($e);
+                    return redirect()->back()->withErrors('Registration successful but failed to send WhatsApp message. Please contact support.');
                 }
             }
         } catch (\Exception $e) {
-            // Redirect kembali dengan pesan error
             return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.');
         }
     }
