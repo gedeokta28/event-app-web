@@ -45,15 +45,28 @@
                             class="nav-link d-flex align-items-center text-truncate @if (Route::is('attendance')) active @endif"
                             aria-expanded="false">
                             <span class="sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="2" stroke="currentColor" width="24" height="24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12l2 2 4-4m5 2A9 9 0 1112 3a9 9 0 0111 11z" />
-                                </svg>
+                                <i class="fas fa-camera" style="font-size: 20px; width: 20px; height: 20px;"></i>
                             </span>
-                            <span class="sidebar-text">Attendance</span>
+                            <span class="sidebar-text">Scan Attendance</span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('attendance.form') }}"
+                            class="nav-link d-flex align-items-center text-truncate @if (Route::is('attendance.form')) active @endif"
+                            aria-expanded="false">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" width="24" height="24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 6h18M3 18h18" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7 10h1M7 16h1M7 14h1M7 12h1M7 8h1" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">Count Attendance</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item mt-2 sidebar-title text-truncate small opacity-50">
                         <i class="fas fa-ellipsis-h align-middle"></i>
                         <span>Management</span>

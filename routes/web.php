@@ -32,6 +32,13 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::redirect("/", "/management-panel/dashboard");
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance');
+    Route::get('attendance-count', function () {
+        return view('attendance.count');
+    })->name('attendance.form');
+    Route::get('show-total-attendance', function () {
+        return view('attendance.show-total-attendance');
+    })->name('attendance.total');
+    Route::post('attendance-count', [\App\Http\Controllers\Admin\AttendanceController::class, 'countByDate'])->name('attendance.count');
     Route::post('scan', [\App\Http\Controllers\Admin\AttendanceController::class, 'scan'])->name('attendance.scan');
     Route::get('profile', [\App\Http\Controllers\Admin\UserProfileController::class, 'index'])
         ->name('profile.index');

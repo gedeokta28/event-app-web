@@ -46,8 +46,8 @@ class AttendanceController extends Controller
             $event_id = $event->event_id;
             // Ambil pendaftaran terakhir untuk event yang sama untuk nomor tiket
             $lastAttendance = Attendance::where('event_id', $event_id)->orderBy('attendance_date_time', 'desc')->first();
+            
             if ($lastAttendance) {
-
                 $nextSequence = (int)substr($lastAttendance->attendance_id, -4) + 1;
             } else {
                 // If there is no previous attendance, start the sequence at 1
@@ -79,6 +79,27 @@ class AttendanceController extends Controller
 
 
         // return response()->json(['success' => true], 200);
+    }
+
+    public function countByDate(Request $request)
+    {
+        // Validate the input date
+        $request->validate([
+            'date' => 'required|date'
+        ]);
+
+        // Parse the input date
+        $selectedDate = Carbon::parse($request->input('date'));
+
+        // Count the number of attendees for the selected date
+        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->count();
+        $formattedDate = $selectedDate->locale('id')->isoFormat('dddd, D MMMM YYYY');
+
+        // Return the view with the total count and the selected date
+        return view('attendance.show-total-attendance', [
+            'totalAttendance' => $totalAttendance,
+            'selectedDate' => $formattedDate
+        ]);
     }
 
     /**
