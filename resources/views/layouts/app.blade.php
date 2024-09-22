@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/font-awesome5-free/css/all.min.css') }}">
 
     <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
     @stack('head')
 </head>

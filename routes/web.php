@@ -31,6 +31,8 @@ Route::post('/events/register', [\App\Http\Controllers\Guest\RegistrationEventCo
 Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::redirect("/", "/management-panel/dashboard");
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance');
+    Route::post('scan', [\App\Http\Controllers\Admin\AttendanceController::class, 'scan'])->name('attendance.scan');
     Route::get('profile', [\App\Http\Controllers\Admin\UserProfileController::class, 'index'])
         ->name('profile.index');
     Route::put('profile', [\App\Http\Controllers\Admin\UserProfileController::class, 'update'])

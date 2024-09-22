@@ -40,6 +40,20 @@
                             <span class="sidebar-text">Dashboard</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('attendance') }}"
+                            class="nav-link d-flex align-items-center text-truncate @if (Route::is('attendance')) active @endif"
+                            aria-expanded="false">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" width="24" height="24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 12l2 2 4-4m5 2A9 9 0 1112 3a9 9 0 0111 11z" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">Attendance</span>
+                        </a>
+                    </li>
                     <li class="nav-item mt-2 sidebar-title text-truncate small opacity-50">
                         <i class="fas fa-ellipsis-h align-middle"></i>
                         <span>Management</span>
@@ -78,7 +92,8 @@
                             <span class="sidebar-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar"
                                     width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    stroke="currentColor" fill="none" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                     <rect x="3" y="4" width="18" height="18" rx="2"></rect>
                                     <line x1="16" y1="2" x2="16" y2="6"></line>
