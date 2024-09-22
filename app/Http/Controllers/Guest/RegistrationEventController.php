@@ -24,7 +24,6 @@ class RegistrationEventController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi data pendaftaran
         $paxPurpose = '';
         $validatedData = $request->validate([
             'pax_name' => 'required|string|max:50',
@@ -42,36 +41,34 @@ class RegistrationEventController extends Controller
             $paxPurpose = $validatedData['other_purpose'];
         }
 
-
         try {
-
             $eventid = $validatedData['event_id'];
-
             $event = Event::find($eventid);
-
             if (!$event) {
                 return redirect()->back()->withErrors('Event not found.');
             }
 
-            // Hitung jumlah pendaftar yang sudah ada
+            $phoneExists = EventRegistration::where('event_id', $eventid)
+                ->where('pax_phone', $validatedData['pax_phone'])
+                ->first();
+
+            if ($phoneExists) {
+                return redirect()->back()->withErrors('Registration failed. This phone number is already registered !!');
+            }
+
             $currentRegistrations = EventRegistration::where('event_id', $eventid)->count();
-            // Ambil pendaftaran terakhir untuk event yang sama untuk nomor tiket
             $lastRegistration = EventRegistration::where('event_id', $eventid)
                 ->orderBy('reg_date_time', 'desc')
                 ->first();
 
-            // Tentukan nomor urut berikutnya
             $nextSequence = $lastRegistration ? (int)substr($lastRegistration->reg_ticket_no, -4) + 1 : 1;
             $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT); // Format nomor urut dengan 4 digit
 
-            // Format reg_id dan reg_ticket_no
             $reg_id = "1.$eventid.$formattedSequence";
             $reg_ticket_no = "$eventid.$formattedSequence";
 
 
-            // Cek jika jumlah pendaftar melebihi batas maksimum
             if ($currentRegistrations >= $event->event_max_pax) {
-                // Simpan data ke database
                 $registration = new EventRegistration([
                     'reg_id' => $reg_id,
                     'reg_date_time' => now(), // Atur waktu pendaftaran
@@ -82,7 +79,6 @@ class RegistrationEventController extends Controller
                     'pax_age' => $validatedData['pax_age'],
                     'pax_purpose_of_visit' => $paxPurpose,
                     // 'pax_company_name' => $validatedData['pax_company_name'],
-
                     'reg_success' => false,
                     'reg_ticket_no' => $reg_ticket_no, // Set nomor tiket
                 ]);
@@ -113,7 +109,6 @@ class RegistrationEventController extends Controller
                     $canvasWidth = 600;
                     $canvasHeight = 800;
                     $img = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
-                    // Tambahkan logo jika ada
                     if ($event->logo_file) {
                         $logoPath = public_path('app/' . $event->logo_file);
                         if (file_exists($logoPath)) {
@@ -160,13 +155,10 @@ class RegistrationEventController extends Controller
                         mkdir($folderPath, 0755, true);
                     }
 
-                    // Path lengkap untuk file sementara
                     $tempFilePath = $folderPath . '/' . $fileName;
 
-                    // Simpan gambar sebagai file fisik sementara
                     $img->save($tempFilePath);
 
-                    // Buat instance UploadedFile dari file fisik sementara
                     $uploadedFile = new UploadedFile(
                         $tempFilePath, // path ke file sementara
                         $fileName,     // nama file
@@ -175,28 +167,20 @@ class RegistrationEventController extends Controller
                         true           // indikasi bahwa ini file yang valid
                     );
 
-                    // Gunakan metode storeAs untuk menyimpan file ke lokasi yang diinginkan
                     $fileExtension = $uploadedFile->clientExtension();
                     $barcodeFileName = sprintf("%s.%s", 'barcode_' . $reg_ticket_no, $fileExtension);
 
-                    // Menyimpan gambar menggunakan storeAs
                     $filepath = $uploadedFile->storeAs('event/barcodes', $barcodeFileName);
 
-                    // Perbarui data event atau registrasi dengan path file barcode
                     $registration->update(['barcode_file' => $filepath]);
 
-
-
-                    //Whatsapp
                     $sid = env('TWILIO_SID');
                     $token = env('TWILIO_AUTH_TOKEN');
                     $twilio = new \Twilio\Rest\Client($sid, $token);
 
-                    // Format pesan yang dikirimkan
                     $messageBody = "🎉 Selamat datang di event kami! 🎉\n\n";
                     $messageBody .= "Kami senang memberitahukan Anda bahwa registrasi Anda berhasil. Berikut adalah detail tiket Anda:\n\n";
                     $messageBody .= "Nama Peserta: " . $validatedData['pax_name'] . "\n";
-                    // $messageBody .= "Perusahaan: " . $validatedData['pax_company_name'] . "\n";
                     $messageBody .= "Nomor Telepon: " . $validatedData['pax_phone'] . "\n";
                     $messageBody .= "Email: " . $validatedData['pax_email'] . "\n\n";
                     $messageBody .= "Harap simpan tiket ini sebagai bukti registrasi Anda. Terima kasih.";
@@ -214,13 +198,10 @@ class RegistrationEventController extends Controller
 
                     return redirect()->back()->with('success', 'Registration successful. Your ticket has been sent via WhatsApp.');
                 } catch (\Exception $e) {
-                    dd($e);
                     return redirect()->back()->withErrors('Registration successful but failed to send WhatsApp message. Please contact support.');
                 }
             }
         } catch (\Exception $e) {
-            dd($e);
-            // Redirect kembali dengan pesan error
             return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.');
         }
     }
