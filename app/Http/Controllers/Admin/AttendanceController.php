@@ -46,7 +46,7 @@ class AttendanceController extends Controller
             $event_id = $event->event_id;
             // Ambil pendaftaran terakhir untuk event yang sama untuk nomor tiket
             $lastAttendance = Attendance::where('event_id', $event_id)->orderBy('attendance_date_time', 'desc')->first();
-            
+
             if ($lastAttendance) {
                 $nextSequence = (int)substr($lastAttendance->attendance_id, -4) + 1;
             } else {
@@ -62,7 +62,7 @@ class AttendanceController extends Controller
             Attendance::create([
                 'attendance_id' => $attendance_id,
                 'attendance_date_time' => Carbon::now(),
-                'event_id' => '2409001', // Bisa disesuaikan sesuai event
+                'event_id' => $event_id, // Bisa disesuaikan sesuai event
                 'event_reg_id' => '1', // Sesuaikan jika ada
                 'event_ticket_no' => $event_ticket_no,
             ]);
