@@ -47,9 +47,10 @@ class RegistrationEventController extends Controller
             if (!$event) {
                 return redirect()->back()->withErrors('Event not found.');
             }
-
+            $phone = $validatedData['pax_phone'];
+            $phone = '+62' . substr($phone, 1);
             $phoneExists = EventRegistration::where('event_id', $eventid)
-                ->where('pax_phone', $validatedData['pax_phone'])
+                ->where('pax_phone', $phone)
                 ->first();
 
             if ($phoneExists) {
@@ -74,7 +75,7 @@ class RegistrationEventController extends Controller
                     'reg_date_time' => now(), // Atur waktu pendaftaran
                     'event_id' => $eventid, // Ambil event_id dari form
                     'pax_name' => $validatedData['pax_name'],
-                    'pax_phone' => $validatedData['pax_phone'],
+                    'pax_phone' => $phone,
                     'pax_email' => $validatedData['pax_email'],
                     'pax_age' => $validatedData['pax_age'],
                     'pax_purpose_of_visit' => $paxPurpose,
@@ -87,12 +88,13 @@ class RegistrationEventController extends Controller
                 return redirect()->back()->withErrors('Registration failed. The maximum number of participants has been reached.');
             } else {
                 try {
+
                     $registration = new EventRegistration([
                         'reg_id' => $reg_id,
                         'reg_date_time' => now(), // Atur waktu pendaftaran
                         'event_id' => $eventid, // Ambil event_id dari form
                         'pax_name' => $validatedData['pax_name'],
-                        'pax_phone' => $validatedData['pax_phone'],
+                        'pax_phone' => $phone,
                         'pax_email' => $validatedData['pax_email'],
                         'pax_age' => $validatedData['pax_age'],
                         'pax_purpose_of_visit' => $paxPurpose,
@@ -188,7 +190,7 @@ class RegistrationEventController extends Controller
                     // Kirim pesan ke nomor peserta
                     $message = $twilio->messages
                         ->create(
-                            "whatsapp:+6287806508302", // Nomor WhatsApp peserta
+                            "whatsapp:$phone", // Nomor WhatsApp peserta
                             [
                                 "from" => "whatsapp:+14155238886", // Nomor WhatsApp Twilio
                                 "body" => $messageBody,
