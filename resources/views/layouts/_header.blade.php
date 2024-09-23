@@ -46,9 +46,9 @@
                     </div>
                 </div>
                 <div class="p-2">
-                    <a href="{{ route('profile.index') }}" class="dropdown-item">
-                        <i class="fas fa-user opacity-50 align-middle me-2"></i>Profile</a>
-                    <hr class="mt-3 mb-1">
+                    {{-- <a href="{{ route('profile.index') }}" class="dropdown-item">
+                        <i class="fas fa-user opacity-50 align-middle me-2"></i>Profile</a> --}}
+                    {{-- <hr class="mt-3 mb-1"> --}}
                     <form action="{{ route('logout') }}" method="post" id="logoutform">
                         @csrf
                         <a href="#" onclick="document.getElementById('logoutform')?.submit();"
