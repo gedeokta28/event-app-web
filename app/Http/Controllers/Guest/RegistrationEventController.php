@@ -13,6 +13,8 @@ use Twilio\Rest\Client;
 use Intervention\Image\Facades\Image;
 use Exception;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendTicketEmailJob;
 
 class RegistrationEventController extends Controller
 {
@@ -275,27 +277,54 @@ class RegistrationEventController extends Controller
 
                     $registration->update(['barcode_file' => $filepath]);
 
-                    $sid = env('TWILIO_SID');
-                    $token = env('TWILIO_AUTH_TOKEN');
-                    $twilio = new \Twilio\Rest\Client($sid, $token);
+                    try {
+                        $initStartDate = \Carbon\Carbon::parse($event->event_start_date);
+                        $initEndDate = \Carbon\Carbon::parse($event->event_end_date);
 
-                    $messageBody = "🎉 Selamat datang di event kami! 🎉\n\n";
-                    $messageBody .= "Kami senang memberitahukan Anda bahwa registrasi Anda berhasil. Berikut adalah detail tiket Anda:\n\n";
-                    $messageBody .= "Nama Peserta: " . $validatedData['pax_name'] . "\n";
-                    $messageBody .= "Nomor Telepon: " . $validatedData['pax_phone'] . "\n";
-                    $messageBody .= "Email: " . $validatedData['pax_email'] . "\n\n";
-                    $messageBody .= "Harap simpan tiket ini sebagai bukti registrasi Anda. Terima kasih.";
+                        $startDate = $initStartDate->format('j');
+                        $endDate = $initEndDate->format('j');
+                        $month = \Carbon\Carbon::parse($event->event_start_date)->format('F');
+                        $year = \Carbon\Carbon::parse($event->event_start_date)->format('Y');
+
+
+                        // Combine into desired format
+                        $formattedDateRange = "{$startDate}-{$endDate} {$month} {$year}";
+                        // Tentukan path ke file tiket (barcode)
+                        // $ticketPath = storage_path('app/' . $filepath);
+                        $ticketPath = public_path('app/' . $filepath);
+                        // Dispatch a job to send the ticket email
+                        SendTicketEmailJob::dispatch($registration, $formattedDateRange, $event, $ticketPath);
+                    } catch (\Exception $e) {
+                        // Handle exception
+                        Log::error('Error updating registration or dispatching email job: ' . $e->getMessage());
+
+                        // Optionally, you can return an error response or handle the error as per your application logic
+                        return response()->json([
+                            'message' => 'Failed to process registration. Please try again later.',
+                            'error' => $e->getMessage(),
+                        ], 500);
+                    }
+                    // $sid = env('TWILIO_SID');
+                    // $token = env('TWILIO_AUTH_TOKEN');
+                    // $twilio = new \Twilio\Rest\Client($sid, $token);
+
+                    // $messageBody = "🎉 Selamat datang di event kami! 🎉\n\n";
+                    // $messageBody .= "Kami senang memberitahukan Anda bahwa registrasi Anda berhasil. Berikut adalah detail tiket Anda:\n\n";
+                    // $messageBody .= "Nama Peserta: " . $validatedData['pax_name'] . "\n";
+                    // $messageBody .= "Nomor Telepon: " . $validatedData['pax_phone'] . "\n";
+                    // $messageBody .= "Email: " . $validatedData['pax_email'] . "\n\n";
+                    // $messageBody .= "Harap simpan tiket ini sebagai bukti registrasi Anda. Terima kasih.";
 
                     // Kirim pesan ke nomor peserta
-                    $message = $twilio->messages
-                        ->create(
-                            "whatsapp:$phone", // Nomor WhatsApp peserta
-                            [
-                                "from" => "whatsapp:+14155238886", // Nomor WhatsApp Twilio
-                                "body" => $messageBody,
-                                "mediaUrl" => ["https://keneas.com/app/$filepath"]
-                            ]
-                        );
+                    // $message = $twilio->messages
+                    //     ->create(
+                    //         "whatsapp:$phone", // Nomor WhatsApp peserta
+                    //         [
+                    //             "from" => "whatsapp:+14155238886", // Nomor WhatsApp Twilio
+                    //             "body" => $messageBody,
+                    //             "mediaUrl" => ["https://keneas.com/app/$filepath"]
+                    //         ]
+                    //     );
 
                     return redirect()->back()->with('success', 'Registration successful. Your ticket has been sent via WhatsApp.');
                 } catch (\Exception $e) {
