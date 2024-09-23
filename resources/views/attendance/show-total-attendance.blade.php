@@ -63,28 +63,41 @@
         .alert-success strong {
             color: #4CAF50;
         }
+
+        /* Styles for the event poster */
+        .event-poster {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .event-poster img {
+            max-width: 50%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 
 <body>
     <div class="container mt-5">
+        <!-- Event Poster Section -->
+        <div class="event-poster">
+            <img src="{{ asset('app/event/images/202409001.jpeg') }}" alt="Event Poster">
+        </div>
+
         <h2 class="mb-4 text-center">Total Attendance</h2>
 
-        <!-- If totalAttendance exists, display the count -->
+        <!-- Jika totalAttendance ada, tampilkan jumlahnya -->
         @if (isset($totalAttendance))
             <div class="card mt-4">
                 <div class="card-body">
                     <i class="fas fa-users attendance-icon"></i>
                     <div>
-                        <div class="attendance-count">{{ $totalAttendance }}</div>
-                        <div class="attendance-label">{{ $selectedDate }}</div>
+                        <div id="attendanceCount" class="attendance-count">{{ $totalAttendance }}</div>
+                        <div id="attendanceDate" class="attendance-label">{{ $selectedDate }}</div>
                     </div>
                 </div>
-            </div>
-
-            <div class="text-center mt-4">
-                <button class="btn btn-refresh" onclick="location.reload();"><i class="fas fa-sync-alt"></i>
-                    Refresh</button>
             </div>
         @else
             <div class="alert alert-info text-center">
@@ -93,14 +106,39 @@
         @endif
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Tambahkan AJAX untuk polling data -->
+    <script>
+        let currentAttendance = {{ isset($totalAttendance) ? $totalAttendance : 0 }};
+        const selectedDate = "{{ $initialDate }}"; // Tanggal yang dipilih
+
+        function checkAttendance() {
+            $.ajax({
+                url: 'attendance-count-json', // Route yang kita buat
+                method: 'GET',
+                data: {
+                    date: selectedDate
+                },
+                success: function(response) {
+                    // Jika attendance berubah, update tampilan
+                    if (response.totalAttendance != currentAttendance) {
+                        $('#attendanceCount').text(response.totalAttendance);
+                        $('#attendanceDate').text(response.formattedDate);
+                        currentAttendance = response.totalAttendance;
+                    }
+                },
+                error: function(error) {
+                    console.error('Error fetching attendance:', error);
+                }
+            });
+        }
+
+        // Polling setiap 6 detik untuk cek apakah attendance berubah
+        setInterval(checkAttendance, 3000);
+    </script>
 </body>
-<script>
-    setTimeout(function() {
-        location.reload();
-    }, 50000);
-</script>
 
 </html>

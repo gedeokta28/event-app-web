@@ -95,10 +95,29 @@ class AttendanceController extends Controller
         // Return the view with the total count and the selected date
         return view('attendance.show-total-attendance', [
             'totalAttendance' => $totalAttendance,
-            'selectedDate' => $formattedDate
+            'selectedDate' => $formattedDate,
+            'initialDate' => $request->input('date')
         ]);
     }
+    public function countByDateJson(Request $request)
+    {
+        // Validate the input date
+        $request->validate([
+            'date' => 'required|date'
+        ]);
 
+        // Parse the input date
+        $selectedDate = Carbon::parse($request->input('date'));
+
+        // Count the number of attendees for the selected date
+        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->count();
+
+        // Return the total attendance as JSON response
+        return response()->json([
+            'totalAttendance' => $totalAttendance,
+            'formattedDate' => $selectedDate->locale('id')->isoFormat('dddd, D MMMM YYYY'),
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      *
