@@ -2,15 +2,12 @@
     <a href="{{ route('dashboard') }}" class="navbar-brand d-block d-lg-none">
         <div class="d-flex align-items-center flex-no-wrap text-truncate">
             <!--Sidebar-icon-->
-            <span class="sidebar-icon bg-primary rounded-circle size-40 text-white">
-                <svg width="16" height="18" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="0.399994" width="4" height="12" fill="white" />
-                    <path
-                        d="M5.89998 9.6C7.1465 9.6 8.34196 9.09429 9.22338 8.19411C10.1048 7.29394 10.6 6.07304 10.6 4.8C10.6 3.52696 10.1048 2.30606 9.22338 1.40589C8.34196 0.505713 7.1465 2.4787e-07 5.89998 0L5.89998 4.8L5.89998 9.6Z"
-                        fill="white" />
-                </svg>
+            <span
+                class="sidebar-icon bg-dark rounded-circle size-40 text-white d-flex align-items-center justify-content-center">
+                B
             </span>
         </div>
+
     </a>
     <ul class="navbar-nav d-flex align-items-center h-100">
         <li class="nav-item d-none d-lg-flex flex-column h-100 me-lg-2 align-items-center justify-content-center">

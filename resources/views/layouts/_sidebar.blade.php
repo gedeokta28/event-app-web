@@ -6,13 +6,13 @@
             <a href="index.html" class="d-block pe-2">
                 <div class="d-flex align-items-center flex-no-wrap text-truncate">
                     <!--Sidebar-icon-->
-                    <img src="{{ asset('assets/images/event.png') }}" alt="logo" width="60" height="60">
-                    {{-- <span class="sidebar-text">
+                    {{-- <img src="{{ asset('assets/images/event.png') }}" alt="logo" width="60" height="60"> --}}
+                    <span class="sidebar-text">
                         <!--Sidebar-text-->
                         <span class="sidebar-text text-truncate fs-4 text-uppercase fw-bolder">
-                            ADMIN
+                            BEYOND LIVING
                         </span>
-                    </span> --}}
+                    </span>
                 </div>
             </a>
         </div>
