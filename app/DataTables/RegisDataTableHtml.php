@@ -23,7 +23,7 @@ class RegisDataTableHtml extends DataTableHtml
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->dom('frtip')
-            ->orderBy(0)
+            ->orderBy(1)
             // ->selectStyleSingle()
             ->buttons([
                 Button::make('excel'),
@@ -44,11 +44,12 @@ class RegisDataTableHtml extends DataTableHtml
     {
         return [
             Column::make('event_id')->title('Event Id'),
+            Column::make('reg_ticket_no')->title('Ticket'),
             Column::make('pax_name')->title('Name'),
             Column::make('pax_phone')->title('Phone'),
             Column::make('pax_email')->title('Email'),
-            Column::make('pax_company_name')->title('Company'),
-            Column::make('reg_success')->title('Status Reg'),
+            Column::make('reg_date_time')->title('Reg. Date'),
+            Column::make('reg_success')->title('Reg. Status'),
         ];
     }
 }

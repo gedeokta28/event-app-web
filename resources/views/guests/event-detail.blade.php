@@ -245,10 +245,11 @@
                             <textarea class="form-control" name="other_purpose" id="other_purpose" placeholder="Specify your purpose"></textarea>
                         </div>
                         <div class="form-group">
-                            <p class="text-muted">*Please ensure your phone number is connected to
-                                WhatsApp, as
-                                tickets will be sent via WhatsApp.</p>
+                            <p class="text-muted">*Please ensure your phone number is connected to WhatsApp, as tickets
+                                will be sent via WhatsApp. Tickets will also be sent to your registered email address.
+                            </p>
                         </div>
+
                         <div class="text-center">
                             <button type="submit" id="submit-btn" class="btn">Register</button>
                         </div>

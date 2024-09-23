@@ -20,11 +20,19 @@ class RegisDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('reg_success', function ($event) {
-                return $event->reg_success ? 'Success' : 'Failure';
+            ->addColumn('reg_date_time', function ($event) {
+                // Convert string to Carbon instance, then format
+                return Carbon::parse($event->reg_date_time)->format('d F Y'); // Format as "25 September 2024"
             })
-            ->addIndexColumn();
+            ->addColumn('reg_success', function ($event) {
+                return $event->reg_success
+                    ? '<span style="color: green;">Success</span>'
+                    : '<span style="color: red;">Failure</span>';
+            })
+            ->addIndexColumn()
+            ->rawColumns(['reg_success']); // Make sure to allow raw HTML
     }
+
 
     /**
      * Get query source of dataTable.
