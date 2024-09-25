@@ -47,7 +47,17 @@
                             <span class="sidebar-icon">
                                 <i class="fas fa-camera" style="font-size: 20px; width: 20px; height: 20px;"></i>
                             </span>
-                            <span class="sidebar-text">Scan Attendance</span>
+                            <span class="sidebar-text">Scan Via Camera</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('attendance-tools') }}"
+                            class="nav-link d-flex align-items-center text-truncate @if (Route::is('attendance-tools')) active @endif"
+                            aria-expanded="false">
+                            <span class="sidebar-icon">
+                                <i class="fas fa-desktop" style="font-size: 20px; width: 20px; height: 20px;"></i>
+                            </span>
+                            <span class="sidebar-text">Scan Via Tools </span>
                         </a>
                     </li>
 

@@ -19,9 +19,13 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-
-
         return view('attendance.index');
+    }
+
+
+    public function scanTools()
+    {
+        return view('attendance.scan-tools');
     }
 
 
@@ -71,11 +75,6 @@ class AttendanceController extends Controller
                 'message' => 'Ticket tidak terdaftar!'
             ], 400);
         }
-
-        // Cari data registrasi event berdasarkan ticket no
-
-
-        // return response()->json(['success' => true], 200);
     }
 
     public function countByDate(Request $request)

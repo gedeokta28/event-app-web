@@ -65,7 +65,10 @@ class RegistrationEventController extends Controller
                 return redirect()->back()->withErrors('Registration failed. This Email is already registered !!');
             }
 
-            $currentRegistrations = EventRegistration::where('event_id', $eventid)->count();
+            // $currentRegistrations = EventRegistration::where('event_id', $eventid)->count();
+            $currentRegistrations = EventRegistration::where('event_id', $eventid)
+                ->where('reg_success', 1) // Ensure reg_success is 1 (true)
+                ->count();
             $lastRegistration = EventRegistration::where('event_id', $eventid)
                 ->orderBy('reg_date_time', 'desc')
                 ->first();
@@ -238,30 +241,27 @@ class RegistrationEventController extends Controller
                         return redirect()->back()->withErrors("Registration failed. We couldn't send an email to the provided address. Please check if it's correct and active. If the issue persists, try another email or contact support for assistance.");
                     }
 
-                    //WHATSAPP
-                    // $sid = env('TWILIO_SID');
-                    // $token = env('TWILIO_AUTH_TOKEN');
-                    // $twilio = new \Twilio\Rest\Client($sid, $token);
+                    // WHATSAPP
+                    $sid = env('TWILIO_SID');
+                    $token = env('TWILIO_AUTH_TOKEN');
+                    $twilio = new \Twilio\Rest\Client($sid, $token);
 
-                    // $messageBody = "🎉 Selamat datang di event kami! 🎉\n\n";
-                    // $messageBody .= "Kami senang memberitahukan Anda bahwa registrasi Anda berhasil. Berikut adalah detail tiket Anda:\n\n";
-                    // $messageBody .= "Nama Peserta: " . $validatedData['pax_name'] . "\n";
-                    // $messageBody .= "Nomor Telepon: " . $validatedData['pax_phone'] . "\n";
-                    // $messageBody .= "Email: " . $validatedData['pax_email'] . "\n\n";
-                    // $messageBody .= "Harap simpan tiket ini sebagai bukti registrasi Anda. Terima kasih.";
+                    $message = $twilio->messages->create(
+                        "whatsapp:$phone", // To
+                        [
+                            "contentSid" => "HXf1a61c0cf0a3cd7f5557caa7aef37f71",
+                            "from" => "whatsapp:+12163500105",
+                            "contentVariables" => json_encode([
+                                "1" => $validatedData['pax_name'],
+                                "2" => $validatedData['pax_phone'],
+                                "3" => $validatedData['pax_email'],
+                                "4" => $filepath,
+                            ]),
 
-                    // Kirim pesan ke nomor peserta
-                    // $message = $twilio->messages
-                    //     ->create(
-                    //         "whatsapp:$phone", // Nomor WhatsApp peserta
-                    //         [
-                    //             "from" => "whatsapp:+14155238886", // Nomor WhatsApp Twilio
-                    //             "body" => $messageBody,
-                    //             "mediaUrl" => ["https://keneas.com/app/$filepath"]
-                    //         ]
-                    //     );
-                    return redirect()->back()->with('success', 'Registration successful! Your ticket has been sent to your email and via WhatsApp.<br>Thank you for joining us at BEYOND LIVING 2024!');
-                    // return redirect()->back()->with('success', 'Registration successful. Your ticket has been sent via WhatsApp.');
+                        ]
+                    );
+                    $downloadLink = route('download.ticket', ['filename' => $barcodeFileName]);
+                    return redirect()->back()->with('success', "Registration successful! Your ticket has been sent to your email and via WhatsApp.<br>Thank you for joining us at BEYOND LIVING 2024!<br><a href='{$downloadLink}' style='text-decoration: underline;'>Click here to download your ticket</a>");
                 } catch (\Exception $e) {
                     $registration->update(['reg_success' => false]);
                     return redirect()->back()->withErrors('Registration failed. ' . $e->getMessage());
