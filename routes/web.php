@@ -27,6 +27,16 @@ Route::get('/management-panel/login', function () {
 
 Route::post('/events/register', [\App\Http\Controllers\Guest\RegistrationEventController::class,  'store'])->name('events.register');
 
+Route::get('/download-ticket/{filename}', function ($filename) {
+    $filePath = public_path('app/event/barcodes/' . $filename);
+
+    if (file_exists($filePath)) {
+        return response()->download($filePath);
+    } else {
+        abort(404, 'File not found.');
+    }
+})->name('download.ticket');
+
 Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::redirect("/", "/management-panel/dashboard");
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');

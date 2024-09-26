@@ -58,12 +58,12 @@ class RegistrationEventController extends Controller
                 ->where('pax_email',  $validatedData['pax_email'])
                 ->where('reg_success',  true)
                 ->first();
-            if ($phoneExists) {
-                return redirect()->back()->withErrors('Registration failed. This Phone Number is already registered !!');
+            if ($phoneExists && $emailExists) {
+                return redirect()->back()->withErrors('Registration failed. This Phone Number & Email is already registered !!');
             }
-            if ($emailExists) {
-                return redirect()->back()->withErrors('Registration failed. This Email is already registered !!');
-            }
+            // if ($emailExists) {
+            //     return redirect()->back()->withErrors('Registration failed. This Email is already registered !!');
+            // }
 
             // $currentRegistrations = EventRegistration::where('event_id', $eventid)->count();
             $currentRegistrations = EventRegistration::where('event_id', $eventid)
@@ -112,7 +112,6 @@ class RegistrationEventController extends Controller
                     ]);
 
                     $registration->save();
-
                     $barcodeGenerator = new DNS1D();
                     $barcode = $barcodeGenerator->getBarcodePNG($reg_ticket_no, 'C128', 3, 50); // scale: 3, height: 50
 
@@ -233,42 +232,52 @@ class RegistrationEventController extends Controller
                         $year = \Carbon\Carbon::parse($event->event_start_date)->format('Y');
 
                         $formattedDateRange = "{$startDate}-{$endDate} {$month} {$year}";
+                        // $ticketPath = storage_path('app/public/' . $filepath);
                         $ticketPath = public_path('app/' . $filepath);
+
                         SendTicketEmailJob::dispatch($registration, $formattedDateRange, $event, $ticketPath);
                     } catch (\Exception $e) {
-                        $registration->update(['reg_success' => false]);
+                        $registration->delete();
                         Log::error('Error updating registration or dispatching email job: ' . $e->getMessage());
                         return redirect()->back()->withErrors("Registration failed. We couldn't send an email to the provided address. Please check if it's correct and active. If the issue persists, try another email or contact support for assistance.");
                     }
 
-                    // WHATSAPP
-                    $sid = env('TWILIO_SID');
-                    $token = env('TWILIO_AUTH_TOKEN');
-                    $twilio = new \Twilio\Rest\Client($sid, $token);
-
-                    $message = $twilio->messages->create(
-                        "whatsapp:$phone", // To
-                        [
-                            "contentSid" => "HXf1a61c0cf0a3cd7f5557caa7aef37f71",
-                            "from" => "whatsapp:+12163500105",
-                            "contentVariables" => json_encode([
-                                "1" => $validatedData['pax_name'],
-                                "2" => $validatedData['pax_phone'],
-                                "3" => $validatedData['pax_email'],
-                                "4" => $filepath,
-                            ]),
-
-                        ]
-                    );
                     $downloadLink = route('download.ticket', ['filename' => $barcodeFileName]);
+
+                    try {
+                        // WHATSAPP
+                        $sid = env('TWILIO_SID');
+                        $token = env('TWILIO_AUTH_TOKEN');
+                        $twilio = new \Twilio\Rest\Client($sid, $token);
+
+                        $message = $twilio->messages->create(
+                            "whatsapp:$phone", // To
+                            [
+                                "contentSid" => "HXf1a61c0cf0a3cd7f5557caa7aef37f71",
+                                "from" => "whatsapp:+12163500105",
+                                "contentVariables" => json_encode([
+                                    "1" => strtoupper($validatedData['pax_name']),
+                                    "2" => $validatedData['pax_phone'],
+                                    "3" => $validatedData['pax_email'],
+                                    "4" => $filepath,
+                                ]),
+
+                            ]
+                        );
+                    } catch (\Exception $e) {
+                        Log::error('Error Whatsapp : ' . $e->getMessage());
+                        return redirect()->back()->with('success', "Registration successful! Your ticket has been sent to your email.<br>Thank you for joining us at BEYOND LIVING 2024!<br><a href='{$downloadLink}' style='text-decoration: underline;'>Click here to download your ticket</a>");
+                    }
+
                     return redirect()->back()->with('success', "Registration successful! Your ticket has been sent to your email and via WhatsApp.<br>Thank you for joining us at BEYOND LIVING 2024!<br><a href='{$downloadLink}' style='text-decoration: underline;'>Click here to download your ticket</a>");
                 } catch (\Exception $e) {
-                    $registration->update(['reg_success' => false]);
-                    return redirect()->back()->withErrors('Registration failed. ' . $e->getMessage());
+                    Log::error('Error nothing 2: ' . $e->getMessage());
+                    $registration->delete();
+                    return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.');
                 }
             }
         } catch (\Exception $e) {
-
+            Log::error('Error nothing: ' . $e->getMessage());
             return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.');
         }
     }
