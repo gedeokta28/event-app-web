@@ -14,6 +14,36 @@
     <meta name="twitter:description" content="{{ strip_tags($event->event_description) }}" />
     <meta name="twitter:image" content="{{ asset('app/' . $event->logo_file) }}" />
     <style>
+        .event-closed-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8d7da;
+            /* Light red background */
+            color: #721c24;
+            /* Dark red text */
+            border: 2px solid #f5c6cb;
+            /* Red border */
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 18px;
+            margin-bottom: 100px;
+            text-align: center;
+        }
+
+        .event-closed-message i {
+            margin-right: 10px;
+            font-size: 24px;
+            color: #721c24;
+            /* Dark red icon color */
+        }
+
+        .closed-text {
+            margin: 0;
+            font-weight: bold;
+        }
+
         .form-control {
             font-size: 12p;
             /* Adjust the size as needed */
@@ -174,8 +204,18 @@
                     <h2>{{ $event->event_name }}</h2>
                     <p> <i class="fa fa-map-marker"></i> {{ $event->event_location ?? 'Event Location' }}</p>
                     {!! $event->event_description ?? 'Event Description' !!}
-                    <button type="button" class="btn" data-toggle="modal" data-target="#buy-ticket-modal">Register
-                        Now</button>
+                    @if ($event->event_active)
+                        <button type="button" class="btn" data-toggle="modal"
+                            data-target="#buy-ticket-modal">Register
+                            Now</button>
+                    @else
+                        <div class="event-closed-message">
+                            <i class="fas fa-exclamation-triangle"></i> <!-- FontAwesome warning icon -->
+                            <p class="closed-text">Sorry, registration’s closed. Thanks for your interest, and we’ll see
+                                you at the next event!</p>
+                        </div>
+                    @endif
+
 
                 </div>
             </div>
