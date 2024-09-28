@@ -47,7 +47,9 @@ class EventDataTableHtml extends DataTableHtml
             Column::make('event_name')->title('Name'),
             Column::make('event_location')->title('Location'),
             Column::computed('event_dates')->title('Dates'),
-            Column::computed('event_time')->title('Time'),
+            Column::computed('slug')->title('Link'),
+            Column::make('event_max_pax')->title('Max. Regis'),
+            // Column::computed('event_time')->title('Time'),
             Column::make('event_active')->title('Status'),
             Column::computed('action')
                 ->exportable(false)

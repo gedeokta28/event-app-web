@@ -152,6 +152,21 @@
 
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-3">
+                                <label class="form-label fw-bold" for="ticket_file">Ticket File</label>
+                            </div>
+                            <div class="col-12 col-lg-9">
+                                <input class="form-control @error('ticket_file') is-invalid @enderror" id="ticket_file"
+                                    name="ticket_file" type="file" accept="image/jpeg,image/png,image/jpg">
+                                @error('ticket_file')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-12 col-lg-3">
                                 <label class="form-label fw-bold" for="event_description">Event Description</label>
                             </div>
                             <div class="col-12 col-lg-9">

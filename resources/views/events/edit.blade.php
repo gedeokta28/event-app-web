@@ -194,6 +194,41 @@
                         </div>
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-3">
+                                <label class="form-label fw-bold" for="ticket_file">Ticket File</label>
+                            </div>
+                            <div class="col-12 col-lg-9">
+                                <input class="form-control @error('ticket_file') is-invalid @enderror" id="ticket_file"
+                                    name="ticket_file" type="file" accept="image/jpeg,image/png,image/jpg">
+                                @error('ticket_file')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            @if ($event->ticket_file)
+                                <div class="col-12 col-lg-3"></div>
+                                <div class="col-12 col-lg-9">
+                                    <a href="{{ asset('app/' . $event->ticket_file) }}"
+                                        target="_blank">{{ $event->ticket_file }}
+                                        <small>
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-external-link" width="24"
+                                                height="24" viewBox="0 0 24 24" stroke-width="2"
+                                                stroke="currentColor" fill="none" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6">
+                                                </path>
+                                                <path d="M11 13l9 -9"></path>
+                                                <path d="M15 4h5v5"></path>
+                                            </svg>
+                                        </small>
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="row align-items-center mb-3">
+                            <div class="col-12 col-lg-3">
                                 <label class="form-label fw-bold" for="event_description">Event Description</label>
                             </div>
                             <div class="col-12 col-lg-9">

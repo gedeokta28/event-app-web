@@ -31,6 +31,7 @@ class EventStoreRequest extends FormRequest
             'event_time'         => 'nullable|string|max:100',
             'logo_file'          => 'nullable|image',
             'intro_file'         => 'nullable|image',
+            'ticket_file'         => 'nullable|image',
             'event_description'  => 'nullable|string|max:1000',
             'event_active'       => 'nullable|boolean',
             'event_max_pax'      => 'required|integer',

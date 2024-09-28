@@ -31,19 +31,27 @@ class EventDataTable extends DataTable
                 // For different start and end dates
                 return $startDate . ' - ' . $endDate;
             })
-            ->addColumn('event_time', function ($event) {
+            // ->addColumn('event_time', function ($event) {
 
-                $eventTime = $event->event_time; // Assumed to be in the format "08:00 - 17:00"
+            //     $eventTime = $event->event_time; // Assumed to be in the format "08:00 - 17:00"
 
 
-                // For different start and end dates
-                return $eventTime;
-            })
+            //     // For different start and end dates
+            //     return $eventTime;
+            // })
             ->addColumn('event_active', function ($event) {
-                return $event->event_active ? 'Active' : 'Inactive';
+                return $event->event_active
+                    ? '<span style="color: green;">Active</span>'
+                    : '<span style="color: red;">Inactive</span>';
             })
+            ->addColumn('slug', function ($event) {
+                // Use the app URL from the .env file
+                $appUrl = config('app.url');
+                return '<a href="' . $appUrl . 'events/' . $event->slug . '"  target="_blank" style="color: blue; text-decoration: underline;">' . $event->slug . '</a>';
+            })
+
             ->addIndexColumn()
-            ->rawColumns(['action']);
+            ->rawColumns(['action', 'slug', 'event_active']);
     }
 
     /**

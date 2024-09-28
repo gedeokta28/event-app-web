@@ -36,6 +36,9 @@ class EventService extends BaseService
         if (isset($data['intro_file']) && $data['intro_file'] instanceof UploadedFile) {
             $this->storeEventIntroImage($event, $data['intro_file']);
         }
+        if (isset($data['ticket_file']) && $data['ticket_file'] instanceof UploadedFile) {
+            $this->storeEventTicketImage($event, $data['ticket_file']);
+        }
 
 
         return $event;
@@ -54,6 +57,9 @@ class EventService extends BaseService
         if (isset($data['intro_file']) && $data['intro_file'] instanceof UploadedFile) {
             $this->storeEventIntroImage($event, $data['intro_file']);
         }
+        if (isset($data['ticket_file']) && $data['ticket_file'] instanceof UploadedFile) {
+            $this->storeEventTicketImage($event, $data['ticket_file']);
+        }
         return $event;
     }
 
@@ -67,6 +73,16 @@ class EventService extends BaseService
         $filepath = $image->storeAs('event/images', $filename);
         $event->update(['logo_file' => $filepath]);
     }
+
+    protected function storeEventTicketImage(Event $event, UploadedFile $image)
+    {
+        $fileExtension = $image->clientExtension();
+        $filename = sprintf("%s.%s", $event->event_id, $fileExtension);
+
+        $filepath = $image->storeAs('event/ticket', $filename);
+        $event->update(['ticket_file' => $filepath]);
+    }
+
 
     protected function storeEventIntroImage(Event $event, UploadedFile $image)
     {
