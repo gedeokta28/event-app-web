@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\AttendanceReport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,15 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
         $fileName = "{$eventName}_registration_report_{$date}.xlsx";
         return Excel::download(new RegistrationReport($status, $eventId), $fileName);
     })->name('download.registration.report');
+    Route::get('download-attendance-report', function (Request $request) {
+        $eventId = $request->input('event_id');
+        $startDate = $request->input('start_date'); // Optional
+        $endDate = $request->input('end_date');
+        $eventName = $request->input('event_name');
+        $date = \Carbon\Carbon::now()->format('Y-m-d');
+        $fileName = "{$eventName}_attendance_report_{$date}.xlsx";
+        return Excel::download(new AttendanceReport($eventId, $startDate, $endDate), $fileName);
+    })->name('download.attendance.report');
 });
 
 Route::get('/_db-migrate', function () {

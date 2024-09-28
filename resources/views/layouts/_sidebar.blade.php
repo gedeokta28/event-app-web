@@ -140,7 +140,7 @@
                         <i class="fas fa-ellipsis-h align-middle"></i>
                         <span>Report</span>
                     </li>
-                    {{-- <li class="nav-item">
+                    <li class="nav-item">
                         <a href="{{ route('report-attendance') }}"
                             class="nav-link d-flex align-items-center text-truncate @if (Route::is('report-attendance')) active @endif"
                             aria-expanded="false">
@@ -150,7 +150,7 @@
                             </span>
                             <span class="sidebar-text">Attendance</span>
                         </a>
-                    </li> --}}
+                    </li>
                     <li class="nav-item">
                         <a href="{{ route('report-registration') }}"
                             class="nav-link d-flex align-items-center text-truncate @if (Route::is('report-registration')) active @endif"

@@ -49,32 +49,90 @@
 @section('content')
     <div class="content p-4 pb-0 d-flex flex-column-fluid position-relative">
         <div class="container-fluid px-0">
-            <h1 class="mb-4">Pilih Event</h1>
             <div class="row">
                 @foreach ($events as $event)
                     <div class="col-md-4 mb-4">
                         <div class="card shadow-sm">
-
                             <div class="card-body">
                                 <h5 class="card-title">{{ $event->event_name }}</h5>
                                 <p class="card-text">
                                     {{ $event->event_location }} <br>
-                                    {{ \Carbon\Carbon::parse($event->event_start_date)->format('d M Y') }} -
-                                    {{ \Carbon\Carbon::parse($event->event_end_date)->format('d M Y') }}
+                                    {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }} -
+                                    {{ \Carbon\Carbon::parse($event->end_date)->format('d M Y') }}
                                 </p>
-                                <a href="" class="btn btn-success mt-2">Cetak
-                                    Report</a>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#reportModal{{ $event->event_id }}">
+                                    Cetak
+                                </button>
+
+                                <div class="modal fade" id="reportModal{{ $event->event_id }}" tabindex="-1"
+                                    aria-labelledby="reportModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="reportModalLabel">{{ $event->event_name }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="reportForm{{ $event->event_id }}"
+                                                    action="{{ route('download.attendance.report') }}" method="GET">
+                                                    <div class="mb-3">
+                                                        <label for="start_date{{ $event->event_id }}"
+                                                            class="form-label">Tanggal Mulai</label>
+                                                        <input type="date" class="form-control"
+                                                            id="start_date{{ $event->event_id }}" name="start_date"
+                                                            onchange="setMinEndDate({{ $event->event_id }})" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="end_date{{ $event->event_id }}"
+                                                            class="form-label">Tanggal Selesai</label>
+                                                        <input type="date" class="form-control"
+                                                            id="end_date{{ $event->event_id }}" name="end_date" disabled
+                                                            required>
+                                                    </div>
+                                                    <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                                                    <input type="hidden" name="event_name" value="{{ $event->slug }}">
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Tutup</button>
+                                                <button type="button" class="btn btn-primary"
+                                                    onclick="event.preventDefault(); document.getElementById('reportForm{{ $event->event_id }}').submit();">Download
+                                                    Report</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 @endforeach
+
             </div>
         </div>
     </div>
 @endsection
 
 @push('head')
-    <script src="https://cdn.tiny.cloud/1/j5dtvkz76wl4jfu85t73jd3rtatnhh5x5e9wigtuzqohjvv3/tinymce/7/tinymce.min.js"
-        referrerpolicy="origin"></script>
-    <script src="https://unpkg.com/imask"></script>
+    <script>
+        function setMinEndDate(eventId) {
+            const startDate = document.getElementById(`start_date${eventId}`).value;
+            const endDateInput = document.getElementById(`end_date${eventId}`);
+
+            console.log('Start Date:', startDate); // Debugging log
+
+            if (startDate) {
+                endDateInput.disabled = false; // Enable the end date input
+                endDateInput.min = startDate; // Set min to the selected start date
+                console.log('End Date min set to:', startDate); // Debugging log
+            } else {
+                endDateInput.disabled = true; // Disable end date if no start date is selected
+                endDateInput.value = ''; // Clear the end date if start date is cleared
+                console.log('End Date input disabled'); // Debugging log
+            }
+        }
+    </script>
 @endpush
