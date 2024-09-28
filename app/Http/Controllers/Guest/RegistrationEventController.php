@@ -120,28 +120,20 @@ class RegistrationEventController extends Controller
                     $img = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
 
                     // Menambahkan logo
-                    if ($event->logo_file) {
-                        $logoPath = public_path('app/' . $event->logo_file);
+                    if ($event->ticket_file) {
+                        $logoPath = public_path('app/' . $event->ticket_file);
                         if (file_exists($logoPath)) {
                             $logoImage = Image::make($logoPath);
-                            $logoWidth = $logoImage->width();
 
-                            // Mengatur ukuran maksimal logo (60% dari lebar canvas)
-                            $maxLogoWidth = $canvasWidth * 0.6;
-                            $maxLogoHeight = $canvasHeight * 0.5; // Atur agar lebih kecil dari sebelumnya
-
-                            // Resize logo
-                            $logoImage->resize($maxLogoWidth, $maxLogoHeight, function ($constraint) {
+                            // Resize logo agar sesuai dengan lebar penuh gambar (tanpa padding)
+                            $logoImage->resize($canvasWidth, null, function ($constraint) {
                                 $constraint->aspectRatio();
                                 $constraint->upsize();
                             });
 
-                            // Mengambil ukuran logo baru
-                            $logoWidth = $logoImage->width();
-
-                            // Hitung posisi logo agar berada di bagian atas
-                            $x = ($canvasWidth - $logoWidth) / 2;
-                            $y = 40; // Naikkan posisi logo agar lebih dekat ke bagian atas
+                            // Posisi logo di bagian atas tanpa padding
+                            $x = 0; // Tidak ada padding, logo memenuhi lebar penuh
+                            $y = 0; // Tidak ada padding, logo ditempatkan di bagian paling atas
 
                             $img->insert($logoImage, 'top-left', $x, $y);
                         }
@@ -166,7 +158,7 @@ class RegistrationEventController extends Controller
                     $img->insert($barcodeImage, 'top-left', $xBarcode, $yBarcode);
 
 
-                    $img->text('NAME', $canvasWidth / 2, $yBarcode - 100, function ($font) {
+                    $img->text('Hello!', $canvasWidth / 2, $yBarcode - 100, function ($font) {
                         $font->file(public_path('fonts/arial-bold.TTF')); // Menggunakan font bold
                         $font->size(22); // Ukuran font
                         $font->color('#000000');
@@ -177,7 +169,7 @@ class RegistrationEventController extends Controller
                     $registrationName = strtoupper($validatedData['pax_name']); // Contoh nama registrasi
                     $img->text($registrationName, $canvasWidth / 2, $yBarcode - 70, function ($font) {
                         $font->file(public_path('fonts/arial.ttf')); // Menggunakan font biasa (non-bold)
-                        $font->size(23); // Ukuran font
+                        $font->size(22); // Ukuran font
                         $font->color('#000000');
                         $font->align('center');
                         $font->valign('top');
@@ -191,6 +183,14 @@ class RegistrationEventController extends Controller
                         $font->color('#000000');
                         $font->align('center');
                         $font->valign('top');
+                    });
+
+                    $img->text('E-Ticket is Valid for 1 Person Only', $canvasWidth / 2, $canvasHeight - 30, function ($font) {
+                        $font->file(public_path('fonts/arial.ttf'));
+                        $font->size(16); // Ukuran font lebih kecil
+                        $font->color('#000000');
+                        $font->align('center');
+                        $font->valign('bottom');
                     });
 
                     // Nama dan folder file yang akan disimpan

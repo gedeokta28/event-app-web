@@ -37,6 +37,7 @@ class Event extends Model
         'event_time',
         'logo_file',
         'intro_file',
+        'ticket_file',
         'event_description',
         'event_active',
         'event_code_reg',
