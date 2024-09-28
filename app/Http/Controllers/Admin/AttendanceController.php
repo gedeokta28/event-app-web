@@ -35,6 +35,7 @@ class AttendanceController extends Controller
 
         $attendance = EventRegistration::where('reg_ticket_no', $event_ticket_no)->first();
         if ($attendance) {
+            $event_reg_id = $attendance->reg_id;
             $event = Event::where('event_id', $attendance->event_id)->first();
             $today = now()->format('Y-m-d');
             $checkAbsen = Attendance::where('event_ticket_no', $attendance->reg_ticket_no)
@@ -64,7 +65,7 @@ class AttendanceController extends Controller
                 'attendance_id' => $attendance_id,
                 'attendance_date_time' => Carbon::now(),
                 'event_id' => $event_id, // Bisa disesuaikan sesuai event
-                'event_reg_id' => '1', // Sesuaikan jika ada
+                'event_reg_id' => $event_reg_id, // Sesuaikan jika ada
                 'event_ticket_no' => $event_ticket_no,
             ]);
 
