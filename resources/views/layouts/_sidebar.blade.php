@@ -136,6 +136,33 @@
                         </ul>
                     </li>
 
+                    <li class="nav-item mt-2 sidebar-title text-truncate small opacity-50">
+                        <i class="fas fa-ellipsis-h align-middle"></i>
+                        <span>Report</span>
+                    </li>
+                    {{-- <li class="nav-item">
+                        <a href="{{ route('report-attendance') }}"
+                            class="nav-link d-flex align-items-center text-truncate @if (Route::is('report-attendance')) active @endif"
+                            aria-expanded="false">
+                            <span class="sidebar-icon">
+                                <i class="fas fa-user-check" style="font-size: 17px; width: 17px; height: 17px;"></i>
+                                <!-- Icon for Attendance -->
+                            </span>
+                            <span class="sidebar-text">Attendance</span>
+                        </a>
+                    </li> --}}
+                    <li class="nav-item">
+                        <a href="{{ route('report-registration') }}"
+                            class="nav-link d-flex align-items-center text-truncate @if (Route::is('report-registration')) active @endif"
+                            aria-expanded="false">
+                            <span class="sidebar-icon">
+                                <i class="fas fa-clipboard-list"
+                                    style="font-size: 17px; width: 17px; height: 17px;"></i>
+                                <!-- Icon for Registration -->
+                            </span>
+                            <span class="sidebar-text">Registration</span>
+                        </a>
+                    </li>
                     {{-- @superadmin(auth()->user())
                         <li class="nav-item">
                             <a href="#variantOption"

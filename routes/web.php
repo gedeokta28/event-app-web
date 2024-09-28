@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Exports\RegistrationReport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +60,17 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
         ->name('profile.update');
     Route::resource('events', \App\Http\Controllers\Admin\ManagementEventsController::class)->except('show');
     Route::resource('registration', \App\Http\Controllers\Admin\ManagementRegisController::class);
+    //report
+    Route::get('report-attendance', [\App\Http\Controllers\Admin\ReportController::class, 'attendance'])->name('report-attendance');
+    Route::get('report-registration', [\App\Http\Controllers\Admin\ReportController::class, 'registration'])->name('report-registration');
+    Route::get('download-registration-report', function (Request $request) {
+        $status = $request->input('status', 'all'); // Ambil status dari input
+        $eventId = $request->input('event_id');
+        $eventName = $request->input('event_name');
+        $date = \Carbon\Carbon::now()->format('Y-m-d');
+        $fileName = "{$eventName}_registration_report_{$date}.xlsx";
+        return Excel::download(new RegistrationReport($status, $eventId), $fileName);
+    })->name('download.registration.report');
 });
 
 Route::get('/_db-migrate', function () {
@@ -69,6 +83,18 @@ Route::get('/_symlink', function () {
     Artisan::call('storage:link');
 
     return response('SUCCESS');
+});
+
+
+Route::get('/test-date', function () {
+    // Mengambil tanggal dan waktu dari database
+    $startDate = "2024-09-28 06:49:06";
+
+    $wibDate = \Carbon\Carbon::parse($startDate)->setTimezone('Asia/Jakarta');
+
+    // Jika Anda ingin mengubah formatnya
+    $formattedWibDate = $wibDate->format('Y-m-d H:i');
+    return response($formattedWibDate);
 });
 
 Route::get('/_clear-cache', function () {
