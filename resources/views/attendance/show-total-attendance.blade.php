@@ -83,7 +83,7 @@
     <div class="container mt-5">
         <!-- Event Poster Section -->
         <div class="event-poster">
-            <img src="{{ asset('app/event/images/202409001.jpeg') }}" alt="Event Poster">
+            <img src="{{ asset('app/' . $eventImage) }}" alt="Event Poster">
         </div>
 
         <h2 class="mb-4 text-center">Total Attendance</h2>
@@ -114,13 +114,16 @@
     <script>
         let currentAttendance = {{ isset($totalAttendance) ? $totalAttendance : 0 }};
         const selectedDate = "{{ $initialDate }}"; // Tanggal yang dipilih
+        const eventId = "{{ $initialEventId }}"; // Tanggal yang dipilih
 
         function checkAttendance() {
             $.ajax({
                 url: 'attendance-count-json', // Route yang kita buat
                 method: 'GET',
                 data: {
-                    date: selectedDate
+                    date: selectedDate,
+                    event_id: eventId,
+
                 },
                 success: function(response) {
                     // Jika attendance berubah, update tampilan

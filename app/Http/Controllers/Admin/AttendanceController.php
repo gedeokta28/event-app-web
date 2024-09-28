@@ -82,21 +82,26 @@ class AttendanceController extends Controller
     {
         // Validate the input date
         $request->validate([
-            'date' => 'required|date'
+            'date' => 'required|date',
         ]);
 
         // Parse the input date
         $selectedDate = Carbon::parse($request->input('date'));
+        $eventId = $request->input('event_id');
+        $event = Event::where('event_id', $eventId)->first();
+        $eventImage = $event->logo_file;
 
         // Count the number of attendees for the selected date
-        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->count();
+        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->where('event_id', $eventId)->count();
         $formattedDate = $selectedDate->locale('id')->isoFormat('dddd, D MMMM YYYY');
 
         // Return the view with the total count and the selected date
         return view('attendance.show-total-attendance', [
             'totalAttendance' => $totalAttendance,
             'selectedDate' => $formattedDate,
-            'initialDate' => $request->input('date')
+            'eventImage' => $eventImage,
+            'initialDate' => $request->input('date'),
+            'initialEventId' => $request->input('event_id'),
         ]);
     }
     public function countByDateJson(Request $request)
@@ -108,9 +113,10 @@ class AttendanceController extends Controller
 
         // Parse the input date
         $selectedDate = Carbon::parse($request->input('date'));
+        $eventId = $request->input('event_id');
 
         // Count the number of attendees for the selected date
-        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->count();
+        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->where('event_id', $eventId)->count();
 
         // Return the total attendance as JSON response
         return response()->json([

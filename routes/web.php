@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Exports\RegistrationReport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use App\Models\Event;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +48,8 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::get('attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance');
     Route::get('attendance-tools', [\App\Http\Controllers\Admin\AttendanceController::class, 'scanTools'])->name('attendance-tools');
     Route::get('attendance-count', function () {
-        return view('attendance.count');
+        $events = Event::orderBy('event_id', 'desc')->get();
+        return view('attendance.count', compact('events'));
     })->name('attendance.form');
     Route::get('show-total-attendance', function () {
         return view('attendance.show-total-attendance');
