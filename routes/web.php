@@ -8,6 +8,7 @@ use App\Exports\RegistrationReport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Models\Event;
+use App\Models\UserEvent;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,8 +49,16 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::get('attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance');
     Route::get('attendance-tools', [\App\Http\Controllers\Admin\AttendanceController::class, 'scanTools'])->name('attendance-tools');
     Route::get('attendance-count', function () {
-        $events = Event::orderBy('event_id', 'desc')->get();
-        return view('attendance.count', compact('events'));
+        if (auth()->user()->user_id == "1") {
+            $events = Event::orderBy('event_id', 'desc')->get();
+            return view('attendance.count', compact('events'));
+        } else {
+            $userId = auth()->user()->user_id;
+            $userEventFind = UserEvent::where('user_id', $userId)->pluck('event_id')->toArray();
+            $userEvent = Event::find($userEventFind[0]);
+            $events = Event::where('event_id', $userEvent->event_id)->get();
+            return view('attendance.count', compact('events'));
+        }
     })->name('attendance.form');
     Route::get('show-total-attendance', function () {
         return view('attendance.show-total-attendance');
@@ -62,10 +71,13 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::put('profile', [\App\Http\Controllers\Admin\UserProfileController::class, 'update'])
         ->name('profile.update');
     Route::resource('events', \App\Http\Controllers\Admin\ManagementEventsController::class)->except('show');
+    Route::resource('users', \App\Http\Controllers\Admin\ManagementUsersController::class)->except('show');
     Route::resource('registration', \App\Http\Controllers\Admin\ManagementRegisController::class);
     //report
     Route::get('report-attendance', [\App\Http\Controllers\Admin\ReportController::class, 'attendance'])->name('report-attendance');
     Route::get('report-registration', [\App\Http\Controllers\Admin\ReportController::class, 'registration'])->name('report-registration');
+    Route::get('report-summary-attendance/{event_id}', [\App\Http\Controllers\Admin\ReportController::class, 'summaryAttendance'])
+        ->name('report-summary-attendance');
     Route::get('download-registration-report', function (Request $request) {
         $status = $request->input('status', 'all'); // Ambil status dari input
         $eventId = $request->input('event_id');

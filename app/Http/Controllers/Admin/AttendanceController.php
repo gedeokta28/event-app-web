@@ -47,18 +47,29 @@ class AttendanceController extends Controller
             $event_code_trans = $event->event_code_trans;
             $event_id = $event->event_id;
             // Ambil pendaftaran terakhir untuk event yang sama untuk nomor tiket
-            $lastAttendance = Attendance::where('event_id', $event_id)->orderBy('attendance_date_time', 'desc')->first();
+            // $lastAttendance = Attendance::where('event_id', $event_id)->orderBy('attendance_id', 'desc')->first();
+            $lastAttendance = Attendance::where('event_id', $event_id)
+                ->orderByRaw('CAST(SUBSTRING_INDEX(attendance_id, \'.\', -1) AS UNSIGNED) DESC')
+                ->first();
 
             if ($lastAttendance) {
-                $nextSequence = (int)substr($lastAttendance->attendance_id, -4) + 1;
+                // Extract the last numeric part and cast it to an integer
+                $lastSequence = (int)substr($lastAttendance->attendance_id, strrpos($lastAttendance->attendance_id, '.') + 1);
+                $nextSequence = $lastSequence + 1;
             } else {
                 // If there is no previous attendance, start the sequence at 1
                 $nextSequence = 1;
             }
 
-            $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
+            // Determine if the next sequence should be 4 or 5 digits
+            if ($nextSequence < 10000) {
+                $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT); // For 4 digits
+            } else {
+                $formattedSequence = str_pad($nextSequence, 5, '0', STR_PAD_LEFT); // For 5 digits
+            }
 
             $attendance_id = "$event_code_trans.$event_id.$formattedSequence";
+
 
             // Simpan absensi
             Attendance::create([

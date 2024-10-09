@@ -41,6 +41,7 @@ class RegistrationReport implements FromCollection, WithHeadings, WithMapping
             'Email',                  // pax_email
             'Status',    // reg_success
             'Age',                    // pax_age
+            'Profession',                    // pax_age
             'Purpose of Visit'        // pax_purpose_of_visit
         ];
     }
@@ -49,6 +50,7 @@ class RegistrationReport implements FromCollection, WithHeadings, WithMapping
     {
         $formattedWibDate = \Carbon\Carbon::parse($registration->reg_date_time)->setTimezone('Asia/Jakarta')->format('Y-m-d H:i');
         $formattedPhone = preg_replace('/^\+62/', '0', $registration->pax_phone);
+        $paxProfession = !empty($registration->pax_profession) ? $registration->pax_profession : '-';
 
         return [
             $registration->reg_id,              // reg_id
@@ -57,7 +59,8 @@ class RegistrationReport implements FromCollection, WithHeadings, WithMapping
             $formattedPhone, // pax_phone
             $registration->pax_email,           // pax_email
             $registration->reg_success ? 'Success' : 'Failure', // reg_success
-            $registration->pax_age,             // pax_age
+            $registration->pax_age,           // pax_age
+            $paxProfession,             // pax_age
             $registration->pax_purpose_of_visit  // pax_purpose_of_visit
         ];
     }

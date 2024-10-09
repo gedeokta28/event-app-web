@@ -2,7 +2,9 @@
 
 namespace App\DataTables;
 
+use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\UserEvent;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -42,8 +44,16 @@ class RegisDataTable extends DataTable
      */
     public function query(EventRegistration $model): QueryBuilder
     {
-        return $model->newQuery()
-            ->select();
+        if (auth()->user()->user_id == "1") {
+            return $model->newQuery()
+                ->select();
+        } else {
+            $userId = auth()->user()->user_id;
+            $userEventFind = UserEvent::where('user_id', $userId)->pluck('event_id')->toArray();
+            $userEvent = Event::find($userEventFind[0]);
+            return $model->newQuery()
+                ->where('event_id', $userEvent->event_id);
+        }
     }
 
     /**

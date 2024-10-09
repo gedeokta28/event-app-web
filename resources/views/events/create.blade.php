@@ -122,7 +122,7 @@
 
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-3">
-                                <label class="form-label fw-bold" for="logo_file">Logo File</label>
+                                <label class="form-label fw-bold" for="logo_file">Event Poster Image</label>
                             </div>
                             <div class="col-12 col-lg-9">
                                 <input class="form-control @error('logo_file') is-invalid @enderror" id="logo_file"
@@ -137,7 +137,7 @@
 
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-3">
-                                <label class="form-label fw-bold" for="intro_file">Intro File</label>
+                                <label class="form-label fw-bold" for="intro_file">Event Background Image</label>
                             </div>
                             <div class="col-12 col-lg-9">
                                 <input class="form-control @error('intro_file') is-invalid @enderror" id="intro_file"
@@ -152,7 +152,7 @@
 
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-3">
-                                <label class="form-label fw-bold" for="ticket_file">Ticket File</label>
+                                <label class="form-label fw-bold" for="ticket_file">Event Ticket Image</label>
                             </div>
                             <div class="col-12 col-lg-9">
                                 <input class="form-control @error('ticket_file') is-invalid @enderror" id="ticket_file"

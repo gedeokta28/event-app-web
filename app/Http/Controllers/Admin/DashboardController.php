@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\UserEvent;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -15,10 +17,18 @@ class DashboardController extends Controller
     public function index()
     {
 
-        $registrationTotal = \App\Models\EventRegistration::count();
-        $eventTotal = \App\Models\Event::count();
-
-        return view('dashboard.index', compact('registrationTotal', 'eventTotal'));
+        if (auth()->user()->user_id == "1") {
+            $registrationTotal = \App\Models\EventRegistration::count();
+            $eventTotal = \App\Models\Event::count();
+            return view('dashboard.index', compact('registrationTotal', 'eventTotal'));
+        } else {
+            $userId = auth()->user()->user_id;
+            $userEventFind = UserEvent::where('user_id', $userId)->pluck('event_id')->toArray();
+            $userEvent = Event::find($userEventFind[0]);
+            $registrationTotal = \App\Models\EventRegistration::where('event_id', $userEvent->event_id)->count();
+            $eventTotal = \App\Models\Event::where('event_id', $userEvent->event_id)->count();
+            return view('dashboard.index_admin', compact('registrationTotal', 'eventTotal', 'userEvent'));
+        }
     }
 
     /**

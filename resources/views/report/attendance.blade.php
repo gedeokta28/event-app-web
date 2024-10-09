@@ -60,10 +60,14 @@
                                     {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }} -
                                     {{ \Carbon\Carbon::parse($event->end_date)->format('d M Y') }}
                                 </p>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
                                     data-bs-target="#reportModal{{ $event->event_id }}">
-                                    Cetak
+                                    Detail
                                 </button>
+                                <a href="{{ route('report-summary-attendance', ['event_id' => $event->slug]) }}"
+                                    class="btn btn-primary">
+                                    Summary
+                                </a>
 
                                 <div class="modal fade" id="reportModal{{ $event->event_id }}" tabindex="-1"
                                     aria-labelledby="reportModalLabel" aria-hidden="true">

@@ -82,32 +82,35 @@
                         <span>Management</span>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="#events" data-bs-toggle="collapse" aria-expanded="false"
-                            class="nav-link d-flex align-items-center text-truncate @if (Route::is('events.*')) active @endif">
-                            <span class="sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar"
-                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
+                    @superadmin(auth()->user())
+                        <li class="nav-item">
+                            <a href="#events" data-bs-toggle="collapse" aria-expanded="false"
+                                class="nav-link d-flex align-items-center text-truncate @if (Route::is('events.*')) active @endif">
+                                <span class="sidebar-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar"
+                                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
 
-                            </span>
-                            <!--Sidebar nav text-->
-                            <span class="sidebar-text">Events</span>
-                        </a>
-                        <ul id="events" class="sidebar-dropdown list-unstyled collapse">
-                            <li class="sidebar-item"><a class="sidebar-link" href="{{ route('events.index') }}">List</a>
-                            </li>
-                            <li class="sidebar-item"><a class="sidebar-link"
-                                    href="{{ route('events.create') }}">Create</a>
-                            </li>
-                        </ul>
-                    </li>
+                                </span>
+                                <!--Sidebar nav text-->
+                                <span class="sidebar-text">Events</span>
+                            </a>
+
+                            <ul id="events" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('events.index') }}">List</a>
+                                </li>
+                                <li class="sidebar-item"><a class="sidebar-link"
+                                        href="{{ route('events.create') }}">Create</a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endsuperadmin
 
                     <li class="nav-item">
                         <a href="#registration" data-bs-toggle="collapse" aria-expanded="false"
@@ -136,6 +139,37 @@
                         </ul>
                     </li>
 
+                    @superadmin(auth()->user())
+                        <li class="nav-item">
+                            <a href="#users" data-bs-toggle="collapse" aria-expanded="false"
+                                class="nav-link d-flex align-items-center text-truncate @if (Route::is('users.*')) active @endif">
+                                <span class="sidebar-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar"
+                                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+
+                                </span>
+                                <!--Sidebar nav text-->
+                                <span class="sidebar-text">User Admin Event</span>
+                            </a>
+                            <ul id="users" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item"><a class="sidebar-link"
+                                        href="{{ route('users.index') }}">List</a>
+                                </li>
+                                <li class="sidebar-item"><a class="sidebar-link"
+                                        href="{{ route('users.create') }}">Create</a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endsuperadmin
+
                     <li class="nav-item mt-2 sidebar-title text-truncate small opacity-50">
                         <i class="fas fa-ellipsis-h align-middle"></i>
                         <span>Report</span>
@@ -163,6 +197,8 @@
                             <span class="sidebar-text">Registration</span>
                         </a>
                     </li>
+
+
                     {{-- @superadmin(auth()->user())
                         <li class="nav-item">
                             <a href="#variantOption"

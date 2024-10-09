@@ -34,6 +34,7 @@ class AttendanceReport implements FromCollection, WithHeadings, WithMapping
                 'r.pax_phone',
                 'r.pax_email',
                 'r.pax_age',
+                'r.pax_profession',
                 'r.pax_purpose_of_visit',
                 'a.attendance_date_time',
                 'r.reg_date_time'
@@ -62,13 +63,14 @@ class AttendanceReport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             'Ticket Number',          // event_ticket_no
-            'Pax Name',               // pax_name
-            'Pax Phone',              // pax_phone
-            'Pax Email',              // pax_email
-            'Pax Age',                // pax_age
-            'Pax Purpose of Visit',   // pax_purpose_of_visit
+            'Name',               // pax_name
+            'Phone',              // pax_phone
+            'Email',              // pax_email
+            'Age',                // pax_age
+            'Profession',                // pax_age
+            'Purpose of Visit',   // pax_purpose_of_visit
             'Attendance Date & Time',  // attendance_date_time
-            'Reg Date Time',          // reg_date_time
+            'Registration Date & Time',          // reg_date_time
         ];
     }
 
@@ -84,6 +86,7 @@ class AttendanceReport implements FromCollection, WithHeadings, WithMapping
             ->format('Y-m-d H:i');
 
         $formattedPhone = preg_replace('/^\+62/', '0', $attendance->pax_phone);
+        $paxProfession = !empty($attendance->pax_profession) ? $attendance->pax_profession : '-';
 
         return [
             "\t" . (string)$attendance->event_ticket_no, // event_ticket_no
@@ -91,6 +94,7 @@ class AttendanceReport implements FromCollection, WithHeadings, WithMapping
             $formattedPhone,                        // pax_phone
             $attendance->pax_email,                        // pax_email
             $attendance->pax_age,                          // pax_age
+            $paxProfession,                          // pax_age
             $attendance->pax_purpose_of_visit,            // pax_purpose_of_visit
             $formattedWibDate,                            // attendance_date_time (in WIB format)
             $formattedRegDate,                            // reg_date_time

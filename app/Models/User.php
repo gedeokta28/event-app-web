@@ -16,6 +16,22 @@ class User extends Authenticatable
 {
     protected $table = 'm_user';
     public $timestamps = false;
+
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'user_id';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+
     // Specify the custom column for username
     public function getAuthIdentifierName()
     {
@@ -24,6 +40,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     const ADMIN = 'admin';
+    const SUPERADMIN = 'superadmin';
 
     /**
      * The attributes that are mass assignable.
@@ -52,6 +69,16 @@ class User extends Authenticatable
     public function getAuthPassword()
     {
         return $this->user_password;
+    }
+
+    /**
+     * check if user has role superadmin
+     *
+     * @return boolean
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->user_level === self::SUPERADMIN;
     }
 
     public function getPhotoProfile(): string

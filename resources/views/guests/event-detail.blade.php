@@ -243,9 +243,13 @@
                         </div>
                         <div class="form-group">
                             <label for="age_group">Whatsapp Number</label>
-                            <input type="text" class="form-control" name="pax_phone"
+                            {{-- <input type="text" class="form-control" name="pax_phone"
                                 placeholder="Your Phone Number (Ex: 081234567981)" pattern="[0-9]+"
-                                title="Please enter only numbers" required>
+                                title="Please enter only numbers" required> --}}
+                            <input type="text" class="form-control" name="pax_phone"
+                                placeholder="Your Phone Number (Ex: 081234567981)" pattern="^08[0-9]{8,12}$"
+                                title="Please enter a valid Indonesian phone number starting with '08' and between 10 to 13 digits."
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="age_group">Email</label>
@@ -263,6 +267,17 @@
                                 <option value="51-60+">51 - 60+</option>
                             </select>
                         </div>
+
+                        <div class="form-group">
+                            <label for="profession">Profession</label>
+                            <select class="form-control" id="profession" name="pax_profession" required>
+                                <option value="" selected disabled>Select Your Profession</option>
+                                <option value="Architect">Architect</option>
+                                <option value="Interior Designer">Interior Designer</option>
+                                <option value="Public">Public</option>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <label for="purpose_of_visit">Purpose of Visit</label>
                             <select class="form-control" id="purpose_of_visit" name="pax_purpose_of_visit" required>

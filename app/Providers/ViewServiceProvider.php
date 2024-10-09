@@ -18,15 +18,17 @@ class ViewServiceProvider extends ServiceProvider
         //
     }
 
-    /**
+   /**
      * Bootstrap services.
      *
      * @return void
      */
     public function boot()
     {
-        Blade::if('operator', function ($value) {
-
+        Blade::if('superadmin', function ($value) {
+            if ($value instanceof User) {
+                return $value->isSuperAdmin();
+            }
 
             return false;
         });

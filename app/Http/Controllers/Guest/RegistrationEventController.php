@@ -32,6 +32,7 @@ class RegistrationEventController extends Controller
             'pax_phone' => 'required|string|max:50',
             'pax_email' => 'required|email|max:100',
             'pax_age' => 'required|string|max:30',
+            'pax_profession' => 'required|string|max:30',
             'pax_purpose_of_visit' => 'required|string|max:500',
             'other_purpose' => 'nullable|string|max:1000',
             'event_id' => 'required|integer',
@@ -70,7 +71,7 @@ class RegistrationEventController extends Controller
                 ->where('reg_success', 1) // Ensure reg_success is 1 (true)
                 ->count();
             $lastRegistration = EventRegistration::where('event_id', $eventid)
-                ->orderBy('reg_date_time', 'desc')
+                ->orderBy('reg_id', 'desc')
                 ->first();
 
             $nextSequence = $lastRegistration ? (int)substr($lastRegistration->reg_ticket_no, -4) + 1 : 1;
@@ -89,6 +90,7 @@ class RegistrationEventController extends Controller
                     'pax_phone' => $phone,
                     'pax_email' => $validatedData['pax_email'],
                     'pax_age' => $validatedData['pax_age'],
+                    'pax_profession' => $validatedData['pax_profession'],
                     'pax_purpose_of_visit' => $paxPurpose,
                     'reg_success' => false,
                     'reg_ticket_no' => $reg_ticket_no,
@@ -106,6 +108,7 @@ class RegistrationEventController extends Controller
                         'pax_phone' => $phone,
                         'pax_email' => $validatedData['pax_email'],
                         'pax_age' => $validatedData['pax_age'],
+                        'pax_profession' => $validatedData['pax_profession'],
                         'pax_purpose_of_visit' => $paxPurpose,
                         'reg_success' => true,
                         'reg_ticket_no' => $reg_ticket_no,
@@ -273,12 +276,12 @@ class RegistrationEventController extends Controller
                 } catch (\Exception $e) {
                     Log::error('Error nothing 2: ' . $e->getMessage());
                     $registration->delete();
-                    return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.');
+                    return redirect()->back()->withErrors('There was an error processing your registration.' . $e->getMessage());
                 }
             }
         } catch (\Exception $e) {
             Log::error('Error nothing: ' . $e->getMessage());
-            return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.');
+            return redirect()->back()->withErrors('There was an error processing your registration. Please try again later.' . $e->getMessage());
         }
     }
 }
