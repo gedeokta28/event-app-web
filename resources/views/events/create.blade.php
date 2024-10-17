@@ -36,6 +36,49 @@
                             <span>Event Details</span>
                         </div>
 
+                        <div class="row align-items-center mb-3">
+                            <div class="col-12 col-lg-3">
+                                <label class="form-label fw-bold" for="event_type">Event Type</label>
+                            </div>
+                            <div class="col-12 col-lg-9">
+                                <select class="form-control @error('event_type') is-invalid @enderror" id="event_type"
+                                    name="event_type">
+                                    <option value="">Select Event Type</option>
+                                    <option value="PK DEVELOPER"
+                                        {{ old('event_type') == 'PK DEVELOPER' ? 'selected' : '' }}>PK DEVELOPER</option>
+                                    <option value="BEYOND" {{ old('event_type') == 'BEYOND' ? 'selected' : '' }}>BEYOND
+                                    </option>
+                                </select>
+                                @error('event_type')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3" id="company_type_section" style="display: none;">
+                            <div class="col-12 col-lg-3">
+                                <label class="form-label fw-bold" for="event_company_type">Company Type</label>
+                            </div>
+                            <div class="col-12 col-lg-9">
+                                <select class="form-control @error('event_company_type') is-invalid @enderror"
+                                    id="event_company_type" name="event_company_type">
+                                    <option value="">Select Company Type</option>
+                                    @foreach ($companyTypes as $companyType)
+                                        <option value="{{ $companyType->company_type }}"
+                                            {{ old('event_company_type') == $companyType->company_type ? 'selected' : '' }}>
+                                            {{ $companyType->company_type }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('event_company_type')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
 
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-3">
@@ -252,7 +295,19 @@
             console.log('Event Time:', eventTime);
         });
     </script> --}}
+    <script>
+        document.getElementById('event_type').addEventListener('change', function() {
+            var eventType = this.value;
+            var companyTypeSection = document.getElementById('company_type_section');
 
+            // Show or hide the company type field based on event type
+            if (eventType === 'PK DEVELOPER') {
+                companyTypeSection.style.display = 'flex'; // Show the company type field
+            } else {
+                companyTypeSection.style.display = 'none'; // Hide the company type field
+            }
+        });
+    </script>
     <script>
         function setMinEndDate() {
             const startDate = document.getElementById('event_start_date').value;

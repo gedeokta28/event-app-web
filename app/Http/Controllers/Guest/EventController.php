@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Guest;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use DateTime;
 
 class EventController extends Controller
@@ -65,6 +66,15 @@ class EventController extends Controller
         // $event = Event::findOrFail($id);
         $event = Event::where('slug', $slug)->firstOrFail();
 
+        if ($event->event_type == 'PK DEVELOPER') {
+            // Ambil daftar company_name dari perusahaan dengan company_type 'PK DEVELOPER' dan urutkan berdasarkan nama
+            $companies = Company::where('company_type', $event->event_company_type)
+                ->orderBy('company_name', 'asc')
+                ->pluck('company_name');
+        } else {
+            $companies = null;
+        }
+
         // Format tanggal dan waktu
         $initStartDate = \Carbon\Carbon::parse($event->event_start_date);
         $initEndDate = \Carbon\Carbon::parse($event->event_end_date);
@@ -89,6 +99,6 @@ class EventController extends Controller
         }
 
         // Kirim data ke view
-        return view('guests.event-detail', compact('event', 'formattedDateRange', 'formattedDayRange', 'eventTime'));
+        return view('guests.event-detail', compact('event', 'formattedDateRange', 'formattedDayRange', 'eventTime', 'companies'));
     }
 }

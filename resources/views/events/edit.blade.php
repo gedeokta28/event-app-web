@@ -37,6 +37,53 @@
                         <div class="text-muted col-12 flex align-items-center my-3">
                             <span>Event Detail</span>
                         </div>
+                        <div class="row align-items-center mb-3">
+                            <div class="col-12 col-lg-3">
+                                <label class="form-label fw-bold" for="event_type">Event Type</label>
+                            </div>
+                            <div class="col-12 col-lg-9">
+                                <select class="form-control @error('event_type') is-invalid @enderror" id="event_type"
+                                    name="event_type" onchange="toggleCompanyType()">
+                                    <option value="">Select Event Type</option>
+                                    <option value="PK DEVELOPER"
+                                        {{ old('event_type', $event?->event_type) === 'PK DEVELOPER' ? 'selected' : '' }}>PK
+                                        DEVELOPER</option>
+                                    <option value="BEYOND"
+                                        {{ old('event_type', $event?->event_type) === 'BEYOND' ? 'selected' : '' }}>BEYOND
+                                    </option>
+                                    <!-- Tambahkan tipe event lainnya jika ada -->
+                                </select>
+                                @error('event_type')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="row align-items-center mb-3" id="company_type_section" style="display: none;">
+                            <div class="col-12 col-lg-3">
+                                <label class="form-label fw-bold" for="event_company_type">Company Type</label>
+                            </div>
+                            <div class="col-12 col-lg-9">
+                                <select class="form-control @error('event_company_type') is-invalid @enderror"
+                                    id="event_company_type" name="event_company_type">
+                                    <option value="">Select Company Type</option>
+                                    @foreach ($companyTypes as $companyType)
+                                        <option value="{{ $companyType->company_type }}"
+                                            {{ old('event_company_type', $event?->event_company_type) == $companyType->company_type ? 'selected' : '' }}>
+                                            {{ $companyType->company_type }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('event_company_type')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
 
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-3">
@@ -322,7 +369,23 @@
 
     {{-- Masked Text --}}
 
+    <script>
+        function toggleCompanyType() {
+            const eventType = document.getElementById('event_type').value;
+            const companyTypeContainer = document.getElementById('company_type_section');
 
+            if (eventType === 'PK DEVELOPER') {
+                companyTypeContainer.style.display = 'flex';
+            } else {
+                companyTypeContainer.style.display = 'none';
+            }
+        }
+
+        // Panggil fungsi saat halaman dimuat untuk menampilkan field jika PK DEVELOPER sudah dipilih
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleCompanyType();
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const formMasked = document.querySelectorAll('form input[data-masked]')

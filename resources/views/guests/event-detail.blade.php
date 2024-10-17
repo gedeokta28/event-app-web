@@ -233,81 +233,144 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="registration-form" method="POST" action="{{ route('events.register') }}">
-                        @csrf
-                        <input type="hidden" name="event_id" value="{{ $event->event_id }}">
-                        <div class="form-group">
-                            <label for="age_group">Name</label>
-                            <input type="text" class="form-control" name="pax_name" placeholder="Your Name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="age_group">Whatsapp Number</label>
-                            {{-- <input type="text" class="form-control" name="pax_phone"
+                    @if ($event->event_type == 'PK DEVELOPER')
+                        <form id="registration-form" method="POST" action="{{ route('events.register') }}">
+                            @csrf
+                            <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                            <div class="form-group">
+                                <label for="pax_name">Name</label>
+                                <input type="text" class="form-control" name="pax_name" placeholder="Your Name"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pax_phone">Whatsapp Number</label>
+                                <input type="text" class="form-control" name="pax_phone"
+                                    placeholder="Your Phone Number (Ex: 081234567981)" pattern="^08[0-9]{8,12}$"
+                                    title="Please enter a valid Indonesian phone number starting with '08' and between 10 to 13 digits."
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pax_email">Email</label>
+                                <input type="email" class="form-control" name="pax_email" placeholder="Your Email"
+                                    required>
+                            </div>
+
+                            {{-- Dropdown untuk memilih perusahaan --}}
+                            <div class="form-group">
+                                <label for="company">Select Company</label>
+                                <select class="form-control" name="company" id="company" required>
+                                    <option value="">Choose a company</option>
+                                    @if (isset($companies) && $companies->isNotEmpty())
+                                        @foreach ($companies as $company)
+                                            <option value="{{ $company }}">{{ $company }}</option>
+                                        @endforeach
+                                    @else
+                                        <option value="" disabled>No companies available</option>
+                                    @endif
+                                    <option value="Other" data-require="true">Other</option>
+                                    <!-- Opsi "Other" ditambahkan di sini -->
+                                </select>
+                            </div>
+
+
+                            <div class="form-group" id="other_company_group" style="display: none;">
+                                <label for="other_company">Please specify</label>
+                                <textarea class="form-control" name="other_company" id="other_company" placeholder="Specify your company"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <p class="text-muted">*Please ensure your phone number is connected to WhatsApp, as
+                                    tickets will be sent via WhatsApp. Tickets will also be sent to your registered
+                                    email address.
+                                </p>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" id="submit-btn" class="btn">Register</button>
+                            </div>
+                        </form>
+                    @else
+                        <form id="registration-form" method="POST" action="{{ route('events.register') }}">
+                            @csrf
+                            <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                            <div class="form-group">
+                                <label for="age_group">Name</label>
+                                <input type="text" class="form-control" name="pax_name" placeholder="Your Name"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="age_group">Whatsapp Number</label>
+                                {{-- <input type="text" class="form-control" name="pax_phone"
                                 placeholder="Your Phone Number (Ex: 081234567981)" pattern="[0-9]+"
                                 title="Please enter only numbers" required> --}}
-                            <input type="text" class="form-control" name="pax_phone"
-                                placeholder="Your Phone Number (Ex: 081234567981)" pattern="^08[0-9]{8,12}$"
-                                title="Please enter a valid Indonesian phone number starting with '08' and between 10 to 13 digits."
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label for="age_group">Email</label>
-                            <input type="email" class="form-control" name="pax_email" placeholder="Your Email"
-                                required>
-                        </div>
+                                <input type="text" class="form-control" name="pax_phone"
+                                    placeholder="Your Phone Number (Ex: 081234567981)" pattern="^08[0-9]{8,12}$"
+                                    title="Please enter a valid Indonesian phone number starting with '08' and between 10 to 13 digits."
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="age_group">Email</label>
+                                <input type="email" class="form-control" name="pax_email" placeholder="Your Email"
+                                    required>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="age_group">Age</label>
-                            <select class="form-control" name="pax_age" required>
-                                <option value="" selected disabled>Age</option>
-                                <option value="20-30">20 - 30</option>
-                                <option value="31-40">31 - 40</option>
-                                <option value="41-50">41 - 50</option>
-                                <option value="51-60+">51 - 60+</option>
-                            </select>
-                        </div>
+                            <div class="form-group">
+                                <label for="age_group">Age</label>
+                                <select class="form-control" name="pax_age" required>
+                                    <option value="" selected disabled>Age</option>
+                                    <option value="20-30">20 - 30</option>
+                                    <option value="31-40">31 - 40</option>
+                                    <option value="41-50">41 - 50</option>
+                                    <option value="51-60+">51 - 60+</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="profession">Profession</label>
-                            <select class="form-control" id="profession" name="pax_profession" required>
-                                <option value="" selected disabled>Select Your Profession</option>
-                                <option value="Architect">Architect</option>
-                                <option value="Interior Designer">Interior Designer</option>
-                                <option value="Public">Public</option>
-                            </select>
-                        </div>
+                            <div class="form-group">
+                                <label for="profession">Profession</label>
+                                <select class="form-control" id="profession" name="pax_profession" required>
+                                    <option value="" selected disabled>Select Your Profession</option>
+                                    <option value="Architect">Architect</option>
+                                    <option value="Interior Designer">Interior Designer</option>
+                                    <option value="Public">Public</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="purpose_of_visit">Purpose of Visit</label>
-                            <select class="form-control" id="purpose_of_visit" name="pax_purpose_of_visit" required>
-                                <option value="" selected disabled>Purpose of Visit</option>
-                                <option value="Inspiration for Building Design">Inspiration for Building
-                                    Design
-                                </option>
-                                <option value="Exploring Homeownership Options">Exploring Homeownership
-                                    Options
-                                </option>
-                                <option value="For Leisure - R&R (Rest and Relaxation)">
-                                    For Leisure - R&R (Rest and Relaxation)
-                                </option>
-                                <option value="Other" data-require="true">Other</option>
-                            </select>
-                        </div>
+                            <div class="form-group">
+                                <label for="purpose_of_visit">Purpose of Visit</label>
+                                <select class="form-control" id="purpose_of_visit" name="pax_purpose_of_visit"
+                                    required>
+                                    <option value="" selected disabled>Purpose of Visit</option>
+                                    <option value="Inspiration for Building Design">Inspiration for Building
+                                        Design
+                                    </option>
+                                    <option value="Exploring Homeownership Options">Exploring Homeownership
+                                        Options
+                                    </option>
+                                    <option value="For Leisure - R&R (Rest and Relaxation)">
+                                        For Leisure - R&R (Rest and Relaxation)
+                                    </option>
+                                    <option value="Other" data-require="true">Other</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group" id="other_purpose_group" style="display: none;">
-                            <label for="other_purpose">Please specify</label>
-                            <textarea class="form-control" name="other_purpose" id="other_purpose" placeholder="Specify your purpose"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <p class="text-muted">*Please ensure your phone number is connected to WhatsApp, as tickets
-                                will be sent via WhatsApp. Tickets will also be sent to your registered email address.
-                            </p>
-                        </div>
+                            <div class="form-group" id="other_purpose_group" style="display: none;">
+                                <label for="other_purpose">Please specify</label>
+                                <textarea class="form-control" name="other_purpose" id="other_purpose" placeholder="Specify your purpose"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <p class="text-muted">*Please ensure your phone number is connected to WhatsApp, as
+                                    tickets
+                                    will be sent via WhatsApp. Tickets will also be sent to your registered email
+                                    address.
+                                </p>
+                            </div>
 
-                        <div class="text-center">
-                            <button type="submit" id="submit-btn" class="btn">Register</button>
-                        </div>
-                    </form>
+                            <div class="text-center">
+                                <button type="submit" id="submit-btn" class="btn">Register</button>
+                            </div>
+                        </form>
+                    @endif
+
                 </div>
 
             </div><!-- /.modal-content -->
@@ -323,6 +386,34 @@
         //     }
         // });
         document.addEventListener('DOMContentLoaded', function() {
+            const isPKDeveloper = @json($event->event_type === 'PK DEVELOPER');
+            if (isPKDeveloper) {
+                const companySelect = document.getElementById('company');
+                const otherCompanyGroup = document.getElementById('other_company_group');
+                const otherCompanyInput = document.getElementById('other_company');
+                const form = document.querySelector('form'); // Pastikan ini adalah form yang benar
+                const submitButton = document.getElementById('submit-btn');
+                // Menampilkan dan mewajibkan field 'other_purpose' jika opsi 'Other' dipilih
+                companySelect.addEventListener('change', function() {
+                    if (this.value === 'Other') {
+                        otherCompanyGroup.style.display = 'block';
+                        otherCompanyInput.setAttribute('required', 'required');
+                    } else {
+                        otherCompanyGroup.style.display = 'none';
+                        otherCompanyInput.removeAttribute('required');
+                        otherCompanyInput.value = ''; // Kosongkan input jika tidak diperlukan
+                    }
+                });
+
+                // Validasi untuk opsi "Pilih Age" dan "Pilih Purpose of Visit"
+                form.addEventListener('submit', function(event) {
+                    // Cek apakah pengguna sudah memilih Age
+
+                    submitButton.innerText = 'Submitting...';
+                    submitButton.disabled = true;
+
+                });
+            }
             const purposeSelect = document.getElementById('purpose_of_visit');
             const otherPurposeGroup = document.getElementById('other_purpose_group');
             const otherPurposeInput = document.getElementById('other_purpose');

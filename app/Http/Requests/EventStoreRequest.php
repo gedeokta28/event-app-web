@@ -24,6 +24,8 @@ class EventStoreRequest extends FormRequest
     public function rules()
     {
         return [
+            'event_type'         => 'required|string|max:100',
+            'event_company_type' => 'nullable|string|max:100',
             'event_name'         => 'required|string|max:100',
             'event_start_date'   => 'required|date',
             'event_end_date'     => 'required|date',

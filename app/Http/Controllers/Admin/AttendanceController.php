@@ -42,7 +42,14 @@ class AttendanceController extends Controller
                 ->whereDate('attendance_date_time', $today)
                 ->first();
             if ($checkAbsen) {
-                return response()->json(['success' => true, 'message' => 'Tiket sudah terdaftar']);
+                if ($event->event_type == "PK DEVELOPER") {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Ticket sudah terdaftar!'
+                    ], 400);
+                } else {
+                    return response()->json(['success' => true, 'message' => 'Tiket sudah terdaftar']);
+                }
             }
             $event_code_trans = $event->event_code_trans;
             $event_id = $event->event_id;
