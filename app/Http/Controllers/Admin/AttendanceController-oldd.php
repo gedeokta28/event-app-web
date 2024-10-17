@@ -19,13 +19,9 @@ class AttendanceController extends Controller
      */
     public function index()
     {
+
+
         return view('attendance.index');
-    }
-
-
-    public function scanTools()
-    {
-        return view('attendance.scan-tools');
     }
 
 
@@ -35,7 +31,6 @@ class AttendanceController extends Controller
 
         $attendance = EventRegistration::where('reg_ticket_no', $event_ticket_no)->first();
         if ($attendance) {
-            $event_reg_id = $attendance->reg_id;
             $event = Event::where('event_id', $attendance->event_id)->first();
             $today = now()->format('Y-m-d');
             $checkAbsen = Attendance::where('event_ticket_no', $attendance->reg_ticket_no)
@@ -47,28 +42,16 @@ class AttendanceController extends Controller
             $event_code_trans = $event->event_code_trans;
             $event_id = $event->event_id;
             // Ambil pendaftaran terakhir untuk event yang sama untuk nomor tiket
-            // $lastAttendance = Attendance::where('event_id', $event_id)->orderBy('attendance_id', 'desc')->first();
-            //
-            $lastAttendance = Attendance::where('event_id', $event_id)
-                ->orderByRaw('CAST(SUBSTRING_INDEX(attendance_id, \'.\', -1) AS UNSIGNED) DESC')
-                ->first();
+            $lastAttendance = Attendance::where('event_id', $event_id)->orderBy('attendance_date_time', 'desc')->first();
 
             if ($lastAttendance) {
-                //
-                // $nextSequence = (int)substr($lastAttendance->attendance_id, -4) + 1;
-                $lastSequence = (int)substr($lastAttendance->attendance_id, strrpos($lastAttendance->attendance_id, '.') + 1);
-                $nextSequence = $lastSequence + 1;
+                $nextSequence = (int)substr($lastAttendance->attendance_id, -4) + 1;
             } else {
                 // If there is no previous attendance, start the sequence at 1
                 $nextSequence = 1;
             }
-            //
-            // $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
-            if ($nextSequence < 10000) {
-                $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT); // For 4 digits
-            } else {
-                $formattedSequence = str_pad($nextSequence, 5, '0', STR_PAD_LEFT); // For 5 digits
-            }
+
+            $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
 
             $attendance_id = "$event_code_trans.$event_id.$formattedSequence";
 
@@ -77,7 +60,7 @@ class AttendanceController extends Controller
                 'attendance_id' => $attendance_id,
                 'attendance_date_time' => Carbon::now(),
                 'event_id' => $event_id, // Bisa disesuaikan sesuai event
-                'event_reg_id' => $event_reg_id, // Sesuaikan jika ada
+                'event_reg_id' => '1', // Sesuaikan jika ada
                 'event_ticket_no' => $event_ticket_no,
             ]);
 
@@ -88,32 +71,32 @@ class AttendanceController extends Controller
                 'message' => 'Ticket tidak terdaftar!'
             ], 400);
         }
+
+        // Cari data registrasi event berdasarkan ticket no
+
+
+        // return response()->json(['success' => true], 200);
     }
 
     public function countByDate(Request $request)
     {
         // Validate the input date
         $request->validate([
-            'date' => 'required|date',
+            'date' => 'required|date'
         ]);
 
         // Parse the input date
         $selectedDate = Carbon::parse($request->input('date'));
-        $eventId = $request->input('event_id');
-        $event = Event::where('event_id', $eventId)->first();
-        $eventImage = $event->logo_file;
 
         // Count the number of attendees for the selected date
-        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->where('event_id', $eventId)->count();
+        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->count();
         $formattedDate = $selectedDate->locale('id')->isoFormat('dddd, D MMMM YYYY');
 
         // Return the view with the total count and the selected date
         return view('attendance.show-total-attendance', [
             'totalAttendance' => $totalAttendance,
             'selectedDate' => $formattedDate,
-            'eventImage' => $eventImage,
-            'initialDate' => $request->input('date'),
-            'initialEventId' => $request->input('event_id'),
+            'initialDate' => $request->input('date')
         ]);
     }
     public function countByDateJson(Request $request)
@@ -125,10 +108,9 @@ class AttendanceController extends Controller
 
         // Parse the input date
         $selectedDate = Carbon::parse($request->input('date'));
-        $eventId = $request->input('event_id');
 
         // Count the number of attendees for the selected date
-        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->where('event_id', $eventId)->count();
+        $totalAttendance = Attendance::whereDate('attendance_date_time', $selectedDate)->count();
 
         // Return the total attendance as JSON response
         return response()->json([

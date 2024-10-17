@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DataTables\AttendanceDataTable;
 use App\Models\Event;
 use App\Http\Controllers\Controller;
+use App\DataTables\AttendanceDataTable;
 use App\Models\UserEvent;
 
 class ReportController extends Controller
@@ -12,7 +12,6 @@ class ReportController extends Controller
 
     public function attendance()
     {
-
         if (auth()->user()->user_id == "1") {
             $events = Event::orderBy('event_id', 'desc')->get();
             return view('report.attendance', compact('events'));

@@ -108,7 +108,9 @@
                                 <div class="c_message_in c_message_box mb-4">
 
                                     <!--chat message avatar-->
-
+                                    <div class="c_message_avatar">
+                                        <img src="assets/media/avatars/03.jpg" class="" alt="">
+                                    </div>
 
                                     <div class="flex-grow-1">
                                         <!--chat-message-and-action-->
@@ -213,7 +215,9 @@
                                 <div class="c_message_out c_message_box mb-4">
 
                                     <!--chat message avatar-->
-
+                                    <div class="c_message_avatar">
+                                        <img src="assets/media/avatars/01.jpg" class="" alt="">
+                                    </div>
                                     <div class="flex-grow-1">
                                         <!--chat-message-and-action-->
                                         <div class="c_message_content d-flex align-items-center"
@@ -318,6 +322,9 @@
                                 <div class="c_message_in c_message_box mb-4">
 
                                     <!--chat message avatar-->
+                                    <div class="c_message_avatar">
+                                        <img src="assets/media/avatars/03.jpg" class="" alt="">
+                                    </div>
 
                                     <div class="flex-grow-1">
                                         <!--chat-message-and-action-->
@@ -361,7 +368,8 @@
                                                         class="card-hover me-2 position-relative width-90">
                                                         <span
                                                             class="hover-image mb-1 position-relative d-block overflow-hidden rounded-3">
-
+                                                            <img src="assets/media/900x600/2.jpg" class="img-fluid"
+                                                                alt="">
                                                             <span
                                                                 class="hover-image-overlay position-absolute start-0 top-0 w-100 h-100 d-flex justify-content-center align-items-center text-white">
                                                                 <span>
@@ -382,7 +390,8 @@
                                                     <a href="#!" class="card-hover position-relative width-90">
                                                         <span
                                                             class="hover-image position-relative d-block mb-1 overflow-hidden rounded-3">
-
+                                                            <img src="assets/media/900x600/4.jpg" class="img-fluid"
+                                                                alt="">
                                                             <span
                                                                 class="hover-image-overlay position-absolute start-0 top-0 w-100 h-100 d-flex justify-content-center align-items-center text-white">
                                                                 <span>

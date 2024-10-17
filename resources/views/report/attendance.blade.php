@@ -69,6 +69,7 @@
                                     Summary
                                 </a>
 
+
                                 <div class="modal fade" id="reportModal{{ $event->event_id }}" tabindex="-1"
                                     aria-labelledby="reportModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">

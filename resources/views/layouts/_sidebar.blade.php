@@ -101,7 +101,6 @@
                                 <!--Sidebar nav text-->
                                 <span class="sidebar-text">Events</span>
                             </a>
-
                             <ul id="events" class="sidebar-dropdown list-unstyled collapse">
                                 <li class="sidebar-item"><a class="sidebar-link" href="{{ route('events.index') }}">List</a>
                                 </li>
@@ -138,7 +137,6 @@
 
                         </ul>
                     </li>
-
                     @superadmin(auth()->user())
                         <li class="nav-item">
                             <a href="#users" data-bs-toggle="collapse" aria-expanded="false"
@@ -197,8 +195,6 @@
                             <span class="sidebar-text">Registration</span>
                         </a>
                     </li>
-
-
                     {{-- @superadmin(auth()->user())
                         <li class="nav-item">
                             <a href="#variantOption"

@@ -1,15 +1,14 @@
 <?php
 
-use App\Exports\AttendanceReport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Exports\RegistrationReport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use App\Exports\AttendanceReport;
 use App\Models\Event;
 use App\Models\UserEvent;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -48,6 +47,10 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance');
     Route::get('attendance-tools', [\App\Http\Controllers\Admin\AttendanceController::class, 'scanTools'])->name('attendance-tools');
+    // Route::get('attendance-count', function () {
+    //     $events = Event::orderBy('event_id', 'desc')->get();
+    //     return view('attendance.count', compact('events'));
+    // })->name('attendance.form');
     Route::get('attendance-count', function () {
         if (auth()->user()->user_id == "1") {
             $events = Event::orderBy('event_id', 'desc')->get();
@@ -107,18 +110,6 @@ Route::get('/_symlink', function () {
     Artisan::call('storage:link');
 
     return response('SUCCESS');
-});
-
-
-Route::get('/test-date', function () {
-    // Mengambil tanggal dan waktu dari database
-    $startDate = "2024-09-28 06:49:06";
-
-    $wibDate = \Carbon\Carbon::parse($startDate)->setTimezone('Asia/Jakarta');
-
-    // Jika Anda ingin mengubah formatnya
-    $formattedWibDate = $wibDate->format('Y-m-d H:i');
-    return response($formattedWibDate);
 });
 
 Route::get('/_clear-cache', function () {

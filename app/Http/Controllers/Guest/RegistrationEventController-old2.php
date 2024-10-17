@@ -32,7 +32,6 @@ class RegistrationEventController extends Controller
             'pax_phone' => 'required|string|max:50',
             'pax_email' => 'required|email|max:100',
             'pax_age' => 'required|string|max:30',
-            'pax_profession' => 'required|string|max:30',
             'pax_purpose_of_visit' => 'required|string|max:500',
             'other_purpose' => 'nullable|string|max:1000',
             'event_id' => 'required|integer',
@@ -70,34 +69,12 @@ class RegistrationEventController extends Controller
             $currentRegistrations = EventRegistration::where('event_id', $eventid)
                 ->where('reg_success', 1) // Ensure reg_success is 1 (true)
                 ->count();
-
-            //
-            // $lastRegistration = EventRegistration::where('event_id', $eventid)
-            //     // ->orderBy('reg_date_time', 'desc')
-            //     ->orderBy('reg_id', 'desc')
-            //     ->first();
-            // $nextSequence = $lastRegistration ? (int)substr($lastRegistration->reg_ticket_no, -4) + 1 : 1;
-            // $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT); // Format nomor urut dengan 4 digit
-            //
             $lastRegistration = EventRegistration::where('event_id', $eventid)
-                ->orderByRaw('CAST(SUBSTRING_INDEX(reg_id, \'.\', -1) AS UNSIGNED) DESC')
+                ->orderBy('reg_date_time', 'desc')
                 ->first();
 
-            if ($lastRegistration) {
-                // Extract the last numeric part and cast it to an integer
-                $lastSequence = (int)substr($lastRegistration->reg_id, strrpos($lastRegistration->reg_id, '.') + 1);
-                $nextSequence = $lastSequence + 1;
-            } else {
-                // If there is no previous attendance, start the sequence at 1
-                $nextSequence = 1;
-            }
-
-            // Determine if the next sequence should be 4 or 5 digits
-            if ($nextSequence < 10000) {
-                $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT); // For 4 digits
-            } else {
-                $formattedSequence = str_pad($nextSequence, 5, '0', STR_PAD_LEFT); // For 5 digits
-            }
+            $nextSequence = $lastRegistration ? (int)substr($lastRegistration->reg_ticket_no, -4) + 1 : 1;
+            $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT); // Format nomor urut dengan 4 digit
 
             $reg_id = "1.$eventid.$formattedSequence";
             $reg_ticket_no = "$eventid.$formattedSequence";
@@ -112,7 +89,6 @@ class RegistrationEventController extends Controller
                     'pax_phone' => $phone,
                     'pax_email' => $validatedData['pax_email'],
                     'pax_age' => $validatedData['pax_age'],
-                    'pax_profession' => $validatedData['pax_profession'],
                     'pax_purpose_of_visit' => $paxPurpose,
                     'reg_success' => false,
                     'reg_ticket_no' => $reg_ticket_no,
@@ -130,7 +106,6 @@ class RegistrationEventController extends Controller
                         'pax_phone' => $phone,
                         'pax_email' => $validatedData['pax_email'],
                         'pax_age' => $validatedData['pax_age'],
-                        'pax_profession' => $validatedData['pax_profession'],
                         'pax_purpose_of_visit' => $paxPurpose,
                         'reg_success' => true,
                         'reg_ticket_no' => $reg_ticket_no,
@@ -145,20 +120,28 @@ class RegistrationEventController extends Controller
                     $img = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
 
                     // Menambahkan logo
-                    if ($event->ticket_file) {
-                        $logoPath = public_path('app/' . $event->ticket_file);
+                    if ($event->logo_file) {
+                        $logoPath = public_path('app/' . $event->logo_file);
                         if (file_exists($logoPath)) {
                             $logoImage = Image::make($logoPath);
+                            $logoWidth = $logoImage->width();
 
-                            // Resize logo agar sesuai dengan lebar penuh gambar (tanpa padding)
-                            $logoImage->resize($canvasWidth, null, function ($constraint) {
+                            // Mengatur ukuran maksimal logo (60% dari lebar canvas)
+                            $maxLogoWidth = $canvasWidth * 0.6;
+                            $maxLogoHeight = $canvasHeight * 0.5; // Atur agar lebih kecil dari sebelumnya
+
+                            // Resize logo
+                            $logoImage->resize($maxLogoWidth, $maxLogoHeight, function ($constraint) {
                                 $constraint->aspectRatio();
                                 $constraint->upsize();
                             });
 
-                            // Posisi logo di bagian atas tanpa padding
-                            $x = 0; // Tidak ada padding, logo memenuhi lebar penuh
-                            $y = 0; // Tidak ada padding, logo ditempatkan di bagian paling atas
+                            // Mengambil ukuran logo baru
+                            $logoWidth = $logoImage->width();
+
+                            // Hitung posisi logo agar berada di bagian atas
+                            $x = ($canvasWidth - $logoWidth) / 2;
+                            $y = 40; // Naikkan posisi logo agar lebih dekat ke bagian atas
 
                             $img->insert($logoImage, 'top-left', $x, $y);
                         }
@@ -183,7 +166,7 @@ class RegistrationEventController extends Controller
                     $img->insert($barcodeImage, 'top-left', $xBarcode, $yBarcode);
 
 
-                    $img->text('Hello!', $canvasWidth / 2, $yBarcode - 100, function ($font) {
+                    $img->text('NAME', $canvasWidth / 2, $yBarcode - 100, function ($font) {
                         $font->file(public_path('fonts/arial-bold.TTF')); // Menggunakan font bold
                         $font->size(22); // Ukuran font
                         $font->color('#000000');
@@ -194,7 +177,7 @@ class RegistrationEventController extends Controller
                     $registrationName = strtoupper($validatedData['pax_name']); // Contoh nama registrasi
                     $img->text($registrationName, $canvasWidth / 2, $yBarcode - 70, function ($font) {
                         $font->file(public_path('fonts/arial.ttf')); // Menggunakan font biasa (non-bold)
-                        $font->size(22); // Ukuran font
+                        $font->size(23); // Ukuran font
                         $font->color('#000000');
                         $font->align('center');
                         $font->valign('top');
@@ -208,14 +191,6 @@ class RegistrationEventController extends Controller
                         $font->color('#000000');
                         $font->align('center');
                         $font->valign('top');
-                    });
-
-                    $img->text('E-Ticket is Valid for 1 Person Only', $canvasWidth / 2, $canvasHeight - 30, function ($font) {
-                        $font->file(public_path('fonts/arial.ttf'));
-                        $font->size(16); // Ukuran font lebih kecil
-                        $font->color('#000000');
-                        $font->align('center');
-                        $font->valign('bottom');
                     });
 
                     // Nama dan folder file yang akan disimpan
@@ -278,7 +253,7 @@ class RegistrationEventController extends Controller
                         $message = $twilio->messages->create(
                             "whatsapp:$phone", // To
                             [
-                                "contentSid" => "HXf36fd50aea18ac52a2a31c0836ac225a",
+                                "contentSid" => "HXf1a61c0cf0a3cd7f5557caa7aef37f71",
                                 "from" => "whatsapp:+12163500105",
                                 "contentVariables" => json_encode([
                                     "1" => strtoupper($validatedData['pax_name']),
