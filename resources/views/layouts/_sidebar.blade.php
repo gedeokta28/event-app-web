@@ -10,7 +10,7 @@
                     <span class="sidebar-text">
                         <!--Sidebar-text-->
                         <span class="sidebar-text text-truncate fs-4 text-uppercase fw-bolder">
-                            BEYOND LIVING
+                            ADMIN
                         </span>
                     </span>
                 </div>
@@ -130,12 +130,21 @@
                             <!--Sidebar nav text-->
                             <span class="sidebar-text">Registrations</span>
                         </a>
-                        <ul id="registration" class="sidebar-dropdown list-unstyled collapse">
-                            <li class="sidebar-item"><a class="sidebar-link"
-                                    href="{{ route('registration.index') }}">List</a>
-                            </li>
+                        @if (auth()->user()->user_id == '1')
+                            <ul id="registration" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="{{ route('registration-event') }}">List</a>
+                                </li>
+                            </ul>
+                        @else
+                            <ul id="registration" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="{{ route('registration.index') }}">List</a>
+                                </li>
+                            </ul>
+                        @endif
 
-                        </ul>
+
                     </li>
                     @superadmin(auth()->user())
                         <li class="nav-item">

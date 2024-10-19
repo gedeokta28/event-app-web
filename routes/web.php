@@ -76,6 +76,9 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::resource('events', \App\Http\Controllers\Admin\ManagementEventsController::class)->except('show');
     Route::resource('users', \App\Http\Controllers\Admin\ManagementUsersController::class)->except('show');
     Route::resource('registration', \App\Http\Controllers\Admin\ManagementRegisController::class);
+    Route::get('registration-event', [\App\Http\Controllers\Admin\ManagementRegisController::class, 'registration'])->name('registration-event');
+    Route::get('registration-events/{event_id}', [\App\Http\Controllers\Admin\ManagementRegisController::class, 'indexAdmin'])
+        ->name('registration-events');
     //report
     Route::get('report-attendance', [\App\Http\Controllers\Admin\ReportController::class, 'attendance'])->name('report-attendance');
     Route::get('report-registration', [\App\Http\Controllers\Admin\ReportController::class, 'registration'])->name('report-registration');
