@@ -95,7 +95,7 @@ class RegistrationEventController extends Controller
                     $reg_ticket_no = "$eventid.$formattedSequence";
 
 
-                    if ($currentRegistrations > $event->event_max_pax) {
+                    if ($currentRegistrations >= $event->event_max_pax) {
                         $registration = new EventRegistration([
                             'reg_id' => $reg_id,
                             'reg_date_time' => now(),
@@ -266,23 +266,23 @@ class RegistrationEventController extends Controller
                                 $message = $twilio->messages->create(
                                     "whatsapp:$phone", // To
                                     [
-                                        "contentSid" => "HXf36fd50aea18ac52a2a31c0836ac225a",
+                                        "contentSid" => "HXbe2bc113a281074a09c0873ae0fae70e",
                                         "from" => "whatsapp:+12163500105",
                                         "contentVariables" => json_encode([
-                                            "1" => strtoupper($validatedData['pax_name']),
-                                            "2" => $validatedData['pax_phone'],
-                                            "3" => $validatedData['pax_email'],
-                                            "4" => $filepath,
+                                            "1" => "Selamat datang di {$event->event_name}",
+                                            "2" => strtoupper($validatedData['pax_name']),
+                                            "3" => $validatedData['pax_phone'],
+                                            "4" => $validatedData['pax_email'],
+                                            "5" => $filepath,
                                         ]),
 
                                     ]
                                 );
                             } catch (\Exception $e) {
                                 Log::error('Error Whatsapp : ' . $e->getMessage());
-                                return redirect()->back()->with('success', "Registration successful! Your ticket has been sent to your email.<br>Thank you for joining us at BEYOND LIVING 2024!<br><a href='{$downloadLink}' style='text-decoration: underline;'>Click here to download your ticket</a>");
+                                return redirect()->back()->with('success', "Registration successful! Your ticket has been sent to your email.<br>Thank you for joining us at {$event->event_name}!<br><a href='{$downloadLink}' style='text-decoration: underline;'>Click here to download your ticket</a>");
                             }
-
-                            return redirect()->back()->with('success', "Registration successful! Your ticket has been sent to your email and via WhatsApp.<br>Thank you for joining us at BEYOND LIVING 2024!<br><a href='{$downloadLink}' style='text-decoration: underline;'>Click here to download your ticket</a>");
+                            return redirect()->back()->with('success', "Registration successful! Your ticket has been sent to your email and via WhatsApp.<br>Thank you for joining us at {$event->event_name}!<br><a href='{$downloadLink}' style='text-decoration: underline;'>Click here to download your ticket</a>");
                         } catch (\Exception $e) {
                             Log::error('Error nothing 2: ' . $e->getMessage());
                             $registration->delete();
@@ -371,7 +371,7 @@ class RegistrationEventController extends Controller
                     $reg_ticket_no = "$eventid.$formattedSequence";
 
 
-                    if ($currentRegistrations > $event->event_max_pax) {
+                    if ($currentRegistrations >= $event->event_max_pax) {
                         $registration = new EventRegistration([
                             'reg_id' => $reg_id,
                             'reg_date_time' => now(),
