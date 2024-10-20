@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Attendance;
+use App\Models\Event;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -34,6 +35,7 @@ class AttendanceReport implements FromCollection, WithHeadings, WithMapping
                 'r.pax_phone',
                 'r.pax_email',
                 'r.pax_age',
+                'r.pax_company_name',
                 'r.pax_profession',
                 'r.pax_purpose_of_visit',
                 'a.attendance_date_time',
@@ -61,17 +63,30 @@ class AttendanceReport implements FromCollection, WithHeadings, WithMapping
 
     public function headings(): array
     {
-        return [
-            'Ticket Number',          // event_ticket_no
-            'Name',               // pax_name
-            'Phone',              // pax_phone
-            'Email',              // pax_email
-            'Age',                // pax_age
-            'Profession',                // pax_age
-            'Purpose of Visit',   // pax_purpose_of_visit
-            'Attendance Date & Time',  // attendance_date_time
-            'Registration Date & Time',          // reg_date_time
-        ];
+        $event = Event::where('event_id',  $this->eventId)->firstOrFail();
+        if ($event->event_type == "PK DEVELOPER") {
+            return [
+                'Ticket Number',          // event_ticket_no
+                'Name',               // pax_name
+                'Phone',              // pax_phone
+                'Email',              // pax_email
+                'Company',
+                'Attendance Date & Time',  // attendance_date_time
+                'Registration Date & Time',          // reg_date_time
+            ];
+        } else {
+            return [
+                'Ticket Number',          // event_ticket_no
+                'Name',               // pax_name
+                'Phone',              // pax_phone
+                'Email',              // pax_email
+                'Age',                // pax_age
+                'Profession',                // pax_age
+                'Purpose of Visit',   // pax_purpose_of_visit
+                'Attendance Date & Time',  // attendance_date_time
+                'Registration Date & Time',          // reg_date_time
+            ];
+        }
     }
 
     public function map($attendance): array
@@ -87,17 +102,29 @@ class AttendanceReport implements FromCollection, WithHeadings, WithMapping
 
         $formattedPhone = preg_replace('/^\+62/', '0', $attendance->pax_phone);
         $paxProfession = !empty($attendance->pax_profession) ? $attendance->pax_profession : '-';
-
-        return [
-            "\t" . (string)$attendance->event_ticket_no, // event_ticket_no
-            $attendance->pax_name,                         // pax_name
-            $formattedPhone,                        // pax_phone
-            $attendance->pax_email,                        // pax_email
-            $attendance->pax_age,                          // pax_age
-            $paxProfession,                          // pax_age
-            $attendance->pax_purpose_of_visit,            // pax_purpose_of_visit
-            $formattedWibDate,                            // attendance_date_time (in WIB format)
-            $formattedRegDate,                            // reg_date_time
-        ];
+        $event = Event::where('event_id',  $this->eventId)->firstOrFail();
+        if ($event->event_type == "PK DEVELOPER") {
+            return [
+                "\t" . (string)$attendance->event_ticket_no, // event_ticket_no
+                $attendance->pax_name,                         // pax_name
+                $formattedPhone,                        // pax_phone
+                $attendance->pax_email,                        // pax_email
+                $attendance->pax_company_name,                        // pax_email
+                $formattedWibDate,                            // attendance_date_time (in WIB format)
+                $formattedRegDate,                            // reg_date_time
+            ];
+        } else {
+            return [
+                "\t" . (string)$attendance->event_ticket_no, // event_ticket_no
+                $attendance->pax_name,                         // pax_name
+                $formattedPhone,                        // pax_phone
+                $attendance->pax_email,                        // pax_email
+                $attendance->pax_age,                          // pax_age
+                $paxProfession,                          // pax_age
+                $attendance->pax_purpose_of_visit,            // pax_purpose_of_visit
+                $formattedWibDate,                            // attendance_date_time (in WIB format)
+                $formattedRegDate,                            // reg_date_time
+            ];
+        }
     }
 }

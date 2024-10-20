@@ -46,11 +46,19 @@ class EventService extends BaseService
 
     public function update($id, array $data)
     {
-
         $event = $this->model->findOrFail($id);
 
+        // Simpan nilai event_active sebelum array_filter
+        $event_active = $data['event_active'] ?? null;
 
-        $event->update(array_filter($data));
+        // Filter data kecuali event_active
+        $filteredData = array_filter($data);
+
+        // Kembalikan event_active ke dalam data (baik true/false atau null)
+        $filteredData['event_active'] = $event_active;
+
+        $event->update($filteredData);
+
         if (isset($data['logo_file']) && $data['logo_file'] instanceof UploadedFile) {
             $this->storeEventImage($event, $data['logo_file']);
         }
@@ -60,8 +68,10 @@ class EventService extends BaseService
         if (isset($data['ticket_file']) && $data['ticket_file'] instanceof UploadedFile) {
             $this->storeEventTicketImage($event, $data['ticket_file']);
         }
+
         return $event;
     }
+
 
 
 
