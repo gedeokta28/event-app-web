@@ -76,6 +76,7 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::resource('events', \App\Http\Controllers\Admin\ManagementEventsController::class)->except('show');
     Route::resource('users', \App\Http\Controllers\Admin\ManagementUsersController::class)->except('show');
     Route::resource('registration', \App\Http\Controllers\Admin\ManagementRegisController::class);
+    Route::post('registration/resend-ticket/{regId}', [\App\Http\Controllers\Admin\ManagementRegisController::class, 'resendTicket'])->name('resend.ticket');
     Route::get('registration-event', [\App\Http\Controllers\Admin\ManagementRegisController::class, 'registration'])->name('registration-event');
     Route::get('registration-events/{event_id}', [\App\Http\Controllers\Admin\ManagementRegisController::class, 'indexAdmin'])
         ->name('registration-events');

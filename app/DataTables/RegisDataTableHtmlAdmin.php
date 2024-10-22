@@ -50,6 +50,11 @@ class RegisDataTableHtmlAdmin extends DataTableHtml
             Column::make('pax_email')->title('Email'),
             Column::make('reg_date_time')->title('Reg. Date'),
             Column::make('reg_success')->title('Reg. Status'),
+            Column::computed('action')
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
         ];
     }
 }

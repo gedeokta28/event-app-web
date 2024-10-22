@@ -31,8 +31,11 @@ class RegisDataTable extends DataTable
                     ? '<span style="color: green;">Success</span>'
                     : '<span style="color: red;">Failure</span>';
             })
+            ->addColumn('action', function ($registrations) {
+                return view('registrations.datatable_action', compact('registrations'));
+            })
             ->addIndexColumn()
-            ->rawColumns(['reg_success']); // Make sure to allow raw HTML
+            ->rawColumns(['reg_success', 'action']); // Make sure to allow raw HTML
     }
 
 
