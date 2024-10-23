@@ -28,7 +28,56 @@ class AttendanceController extends Controller
         return view('attendance.scan-tools');
     }
 
+    public function checkIn(Request $request)
+    {
+        $regId = $request->input('reg_id');
 
+        // Find the event registration based on reg_id
+        $attendance = EventRegistration::where('reg_id', $regId)->first();
+
+        if ($attendance) {
+            $event_id = $attendance->event_id;
+            $event_ticket_no = $attendance->reg_ticket_no;
+
+            // Check if the user has already checked in for today
+            $today = now()->format('Y-m-d');
+            $checkAbsen = Attendance::where('event_ticket_no', $event_ticket_no)
+                ->whereDate('attendance_date_time', $today)
+                ->first();
+
+            if ($checkAbsen) {
+                return response()->json(['success' => false, 'message' => 'Ticket sudah terdaftar!'], 400);
+            }
+
+            // Proceed with check-in logic...
+            $event_code_trans = Event::where('event_id', $event_id)->value('event_code_trans');
+
+            // Determine the next attendance ID
+            $lastAttendance = Attendance::where('event_id', $event_id)
+                ->orderByRaw('CAST(SUBSTRING_INDEX(attendance_id, \'.\', -1) AS UNSIGNED) DESC')
+                ->first();
+
+            $nextSequence = $lastAttendance ?
+                (int)substr($lastAttendance->attendance_id, strrpos($lastAttendance->attendance_id, '.') + 1) + 1 : 1;
+
+            $formattedSequence = str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
+
+            $attendance_id = "$event_code_trans.$event_id.$formattedSequence";
+
+            // Save attendance
+            Attendance::create([
+                'attendance_id' => $attendance_id,
+                'attendance_date_time' => now(),
+                'event_id' => $event_id,
+                'event_reg_id' => $attendance->reg_id,
+                'event_ticket_no' => $event_ticket_no,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Check-in berhasil!']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Ticket tidak terdaftar!'], 400);
+        }
+    }
     public function scan(Request $request)
     {
         $event_ticket_no = $request->input('event_ticket_no');

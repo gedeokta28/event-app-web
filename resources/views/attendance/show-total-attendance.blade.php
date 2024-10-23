@@ -76,6 +76,27 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
+        /* Home button styles */
+        .btn-home {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn-home:hover {
+            background-color: #0056b3;
+            /* Darker shade on hover */
+            transform: scale(1.1);
+        }
     </style>
 </head>
 
@@ -106,6 +127,10 @@
         @endif
     </div>
 
+    <a href="{{ route('dashboard') }}" class="btn btn-primary rounded-circle btn-home">
+        <i class="fas fa-home"></i>
+    </a>
+
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -123,7 +148,6 @@
                 data: {
                     date: selectedDate,
                     event_id: eventId,
-
                 },
                 success: function(response) {
                     // Jika attendance berubah, update tampilan

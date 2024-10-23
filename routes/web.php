@@ -66,6 +66,7 @@ Route::middleware('auth')->prefix('/management-panel')->group(function () {
     Route::get('show-total-attendance', function () {
         return view('attendance.show-total-attendance');
     })->name('attendance.total');
+    Route::post('/attendance/check-in', [\App\Http\Controllers\Admin\AttendanceController::class, 'checkIn'])->name('attendance.checkIn');
     Route::post('attendance-count', [\App\Http\Controllers\Admin\AttendanceController::class, 'countByDate'])->name('attendance.count');
     Route::get('attendance-count-json', [\App\Http\Controllers\Admin\AttendanceController::class, 'countByDateJson']);
     Route::post('scan', [\App\Http\Controllers\Admin\AttendanceController::class, 'scan'])->name('attendance.scan');

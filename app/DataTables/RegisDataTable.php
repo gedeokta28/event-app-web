@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Models\Attendance;
 use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Models\UserEvent;
@@ -22,6 +23,21 @@ class RegisDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->addColumn('check_in', function ($event) {
+                $today = now()->format('Y-m-d');
+                $attendance = Attendance::where('event_reg_id', $event->reg_id)
+                    ->whereDate('attendance_date_time', $today)
+                    ->first();
+
+                if ($attendance) {
+                    return '<span class="badge bg-success">Checked In</span>'; // Shortened message
+                } else if (!$event->reg_success) {
+                    return '<button class="btn btn-secondary" disabled>Registration Incomplete</button>'; // Disabled button
+                } else {
+                    return '<button class="btn btn-primary check-in-btn" data-reg-id="' . $event->reg_id . '">Check In</button>';
+                }
+            })
+
             ->addColumn('reg_date_time', function ($event) {
                 // Convert string to Carbon instance, then format
                 return Carbon::parse($event->reg_date_time)->format('d F Y'); // Format as "25 September 2024"
@@ -34,8 +50,9 @@ class RegisDataTable extends DataTable
             ->addColumn('action', function ($registrations) {
                 return view('registrations.datatable_action', compact('registrations'));
             })
+
             ->addIndexColumn()
-            ->rawColumns(['reg_success', 'action']); // Make sure to allow raw HTML
+            ->rawColumns(['reg_success', 'check_in', 'action']); // Make sure to allow raw HTML
     }
 
 

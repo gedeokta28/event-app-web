@@ -43,13 +43,14 @@ class RegisDataTableHtml extends DataTableHtml
     public function getColumns(): array
     {
         return [
-            Column::make('event_id')->title('Event Id'),
-            Column::make('reg_ticket_no')->title('Ticket'),
+            // Column::make('event_id')->title('Event Id'),
+            Column::make('check_in')->title('Attend.'),
+            Column::make('reg_success')->title('Reg. Status'),
             Column::make('pax_name')->title('Name'),
             Column::make('pax_phone')->title('Phone'),
             Column::make('pax_email')->title('Email'),
-            Column::make('reg_date_time')->title('Reg. Date'),
-            Column::make('reg_success')->title('Reg. Status'),
+            Column::make('reg_ticket_no')->title('Ticket'),
+            // Column::make('reg_date_time')->title('Reg. Date'),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)

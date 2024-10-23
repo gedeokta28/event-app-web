@@ -26,7 +26,6 @@
         <div class="container-fluid px-0">
             <div class="row">
                 <div class="card">
-
                     <div class="card-body">
                         {{ $dataTable->table() }}
                     </div>
@@ -38,4 +37,37 @@
 
 @push('scripts')
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).on('click', '.check-in-btn', function() {
+            var regId = $(this).data('reg-id');
+            var button = $(this); // Save the button reference
+
+            // Show loading state
+            button.prop('disabled', true).text('Loading...'); // Change button text and disable it
+
+            $.ajax({
+                url: '{{ route('attendance.checkIn') }}', // Use named route for better practice
+                method: 'POST',
+                data: {
+                    reg_id: regId,
+                    _token: '{{ csrf_token() }}' // Include CSRF token
+                },
+                success: function(response) {
+                    alert(response.message);
+                    // Refresh the DataTable
+                    $('#registration-table').DataTable().ajax
+                        .reload(); // Replace with your DataTable ID
+                },
+                error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                },
+                complete: function() {
+                    // Reset button to original state
+                    button.prop('disabled', false).text('Check In'); // Change text back to original
+                }
+            });
+        });
+    </script>
 @endpush
